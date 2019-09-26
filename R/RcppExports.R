@@ -17,3 +17,17 @@ rcppeigen_bothproducts <- function(x) {
     .Call('_gravity_rcppeigen_bothproducts', PACKAGE = 'gravity', x)
 }
 
+score <- function(n, th, mu, y) {
+    .Call('_gravity_score', PACKAGE = 'gravity', n, th, mu, y)
+}
+
+info <- function(n, th, mu, y) {
+    .Call('_gravity_info', PACKAGE = 'gravity', n, th, mu, y)
+}
+
+#' Simplified C++ function for MASS::theta.ml
+#' 
+speed_theta_ml <- function(y, mu, limit = 10L, eps = 1e-6, trace = TRUE) {
+    .Call('_gravity_speed_theta_ml', PACKAGE = 'gravity', y, mu, limit, eps, trace)
+}
+
