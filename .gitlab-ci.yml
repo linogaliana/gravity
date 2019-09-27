@@ -30,6 +30,7 @@ variables:
 
 before_script:
   - Rscript -e "install.packages('Rcpp')"
+  - Rscript -e "install.packages('RcppEigen')"
   - Rscript -e "devtools::install_deps('.')"
 
 build:
