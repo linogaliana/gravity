@@ -1,0 +1,62 @@
+image: git-registry.stable.innovation.insee.eu/innovation/rstudio
+
+stages:
+  - build
+  - test
+  - check
+
+
+before_script:
+   - echo " => mise a jour des modules"
+   - HTTPS_PROXY=http://proxy-rie.http.insee.fr:8080/ git submodule sync --recursive
+   - HTTPS_PROXY=http://proxy-rie.http.insee.fr:8080/ git submodule update --init --recursive
+  
+
+variables:
+  GIT_SSL_NO_VERIFY: "1"
+  _R_CHECK_CRAN_INCOMING_: "FALSE"
+  _R_CHECK_CRAN_INCOMING_: "FALSE"
+  _R_CHECK_FORCE_SUGGESTS_: "FALSE"
+  _R_CHECK_CRAN_INCOMING_USE_ASPELL_: "TRUE"
+  R_LIBS_USER: "$CI_PROJECT_DIR/ci/lib"
+  CHECK_DIR: "$CI_PROJECT_DIR/ci/logs"
+  BUILD_LOGS_DIR: "$CI_PROJECT_DIR/ci/logs/$CI_PROJECT_NAME.Rcheck"  
+  CODECOV_TOKEN: "c1101b3e-9bab-4c94-843c-2faa6b809598"
+  CXX1X: "g++"
+  CXX1XSTD: "-std=c++0x"
+  CFLAGS: "-Wall -pedantic -fdiagnostics-color=always"
+  CXXFLAGS: "-Wall -pedantic -fdiagnostics-color=always"
+  CXX11FLAGS: "-Wall -pedantic -fdiagnostics-color=always"
+
+before_script:
+  - Rscript -e "install.packages('Rcpp')"
+  - Rscript -e "devtools::install_deps('.')"
+
+build:
+  stage: build
+  script:
+    - r -e "devtools::build('.', vignettes = FALSE)"
+  artifacts:
+    paths:
+      - '*.tar.gz'
+
+test:
+  stage: test
+  script:
+    - Rscript -e 'devtools::test(".")'
+
+
+checkerrors:
+  stage: check
+  script:
+    - r -e 'if (!identical(devtools::check(".", document = FALSE, args = "--no-tests")[["errors"]], character(0))) stop("Check with Errors")'
+
+checkwarnings:
+  stage: check
+  script:
+    - r -e 'if (!identical(devtools::check(".", document = FALSE, args = "--no-tests")[[""]], character(0))) stop("Check with Errors")'
+
+checknotes:
+  stage: check
+  script:
+    - r -e 'if (!identical(devtools::check(".", document = FALSE, args = "--no-tests")[["notes"]], character(0))) stop("Check with Errors")'
