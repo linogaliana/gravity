@@ -1,6 +1,14 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
+//' Score for negative binomial maximum-likelihood estimates
+//' 
+//' @param n Number of observations
+//' @param th \eqn{\theta} parameter
+//' @param mu Predicted values
+//' @param y Observed values
+//' 
+//' @return Score value
 // [[Rcpp::export]]
 double score(int n, double th,
              NumericVector mu,
@@ -12,6 +20,9 @@ double score(int n, double th,
   
 }
 
+//' Information iteration value
+//' 
+//' @inheritParams score
 // [[Rcpp::export]]
 double info(int n, double th,
             NumericVector mu,
@@ -23,7 +34,20 @@ double info(int n, double th,
   
 }
 
-//' Simplified C++ function for MASS::theta.ml
+//' Maximum likelihood estimation for negative binomial models
+//' 
+//' Simplified C++ function for \link[MASS]{theta.ml}
+//' 
+//' @inheritParams MASS::theta.ml
+//' @importFrom MASS theta.ml
+//' 
+//' @return A maximum-likelihood estimator for \eqn{\theta}
+//' 
+//' @seealso \link{fastglm.nb} ; \link[MASS]{theta.ml} ; \link[MASS]{glm.nb}
+//' 
+//' @references <Venables, W. N. and Ripley, B. D. (2002) Modern Applied Statistics with S. Fourth edition. Springer>
+//' 
+//' @export
 //' 
 // [[Rcpp::export]]
 double speed_theta_ml(NumericVector y, NumericVector mu,
