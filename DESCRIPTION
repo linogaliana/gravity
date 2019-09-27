@@ -1,13 +1,21 @@
 Package: gravity
 Type: Package
-Title: What the Package Does Using Title Case
-Version: 1.0
-Date: 2019-09-26
+Title: Gravity model with large scale data
+Version: 0.0.1
 Author: Lino Galiana
 Maintainer: Lino Galiana <lino.galiana@insee.fr>
-Description: More details about what the package does. See
-            <http://cran.r-project.org/doc/manuals/r-release/R-exts.html#The-DESCRIPTION-file> for details
-            on how to write this part.
+Description: An \code{R} package proposing a series of models related
+            to gravity model.
+Details: This package is suited for large scale data that fit into memory.
+            It is based on \code{Rcpp} and \code{fastglm} to be faster
+            and more memory-parcimonious
 License: GPL (>= 2)
-Imports: Rcpp (>= 1.0.2), RcppEigen (>= 0.3.3.5.0)
+Imports: fastglm,
+    MASS,
+    Rcpp (>= 1.0.2),
+    RcppEigen (>= 0.3.3.5.0)
 LinkingTo: Rcpp, RcppEigen
+References: <Silva, J. S., & Tenreyro, S. (2006). The log of gravity. The Review of Economics and statistics, 88(4), 641-658.>
+RoxygenNote: 6.1.1
+Suggests: 
+    testthat (>= 2.1.0)
