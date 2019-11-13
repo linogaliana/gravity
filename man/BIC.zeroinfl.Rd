@@ -4,7 +4,19 @@
 \alias{BIC.zeroinfl}
 \title{Bayesian information criterion implementation for \code{zeroinfl} objects}
 \usage{
-\method{BIC}{zeroinfl}(object)
+\method{BIC}{zeroinfl}(object, ...)
+}
+\arguments{
+\item{object}{A fitted model object for which there exists a logLik
+method to extract the corresponding log-likelihood, or
+an object inheriting from class logLik.}
+
+\item{...}{Optionally more fitted model objects
+
+
+Formula \eqn{-2l + k\log(npar)} where *npar*
+ represents the number of parameters in the fitted model
+ and \eqn{l} represents model log-likelihood}
 }
 \description{
 Bayesian information criterion implementation for \code{zeroinfl} objects
