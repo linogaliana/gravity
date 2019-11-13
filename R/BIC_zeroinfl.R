@@ -1,6 +1,6 @@
 #' Bayesian information criterion implementation for \code{zeroinfl} objects
 #' 
-#' @inheritParams stats::BIC
+#' @inheritParams stats::AIC
 #' 
 #' Formula \eqn{-2*l + k*\log(npar)} where \eqn{npar} 
 #'  represents the number of parameters in the fitted model

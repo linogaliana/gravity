@@ -1,5 +1,6 @@
 #' Fast implementation for zero-inflated Count Data Regression
 #' 
+#' @import pscl
 #' @export
 
 fastzeroinfl <- function(formula, data, subset, na.action, weights, offset, 
