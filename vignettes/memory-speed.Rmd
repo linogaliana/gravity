@@ -1,0 +1,75 @@
+---
+title: "Reduce memory and time needs for ML count data"
+output: rmarkdown::html_vignette
+vignette: >
+%\VignetteIndexEntry{Reduce memory and time needs for ML count data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+  ---
+  
+  ```{r, include = FALSE}
+knitr::opts_chunk$set(
+collapse = TRUE,
+comment = "#>"
+)
+```
+
+```{r setup}
+library(gravity)
+```
+
+
+# Data used
+
+```{r, eval = FALSE}
+df <- data.frame(x1 = rnorm(1e5), x2 = rnorm(1e5))
+df$y <- round(exp(2*df$x1 - 0.02*df$x2))
+head(df)
+```
+
+
+```{r}
+df <- MASS::quine
+head(df)
+```
+
+```{r}
+m <- microbenchmark::microbenchmark(
+  fit_glm  <- MASS::glm.nb(Days ~ Sex + Age,
+                           data = df),
+  fit_glm2  <- gravity:::fastglm.nb(Days ~ Sex + Age,
+                                   data = df),
+  times = 50L
+)
+```
+
+
+```{r}
+m <- microbenchmark::microbenchmark(
+  fit_glm  <- pscl::zeroinfl(Days ~ Sex + Age,
+                           data = df),
+  fit_glm2  <- pscl::zeroinfl(Days ~ Sex + Age,
+                                   data = df),
+  times = 20L
+)
+```
+
+
+# Memory
+
+```{r}
+data("bioChemists", package = "pscl")
+data.table::setDT(bioChemists)
+profvis::profvis({
+fit_glm  <- MASS::glm.nb(art ~ ., data = bioChemists)
+fit_glm2  <- gravity:::fastglm.nb(art ~ ., data = bioChemists)
+})
+```
+
+
+```{r}
+profvis::profvis({
+  fit_glm  <- pscl::zeroinfl(art ~ ., data = bioChemists)
+  fit_glm2  <- gravity::fastzeroinfl(art ~ ., data = bioChemists)
+})
+```
