@@ -10,6 +10,45 @@ fastzeroinfl(formula, data, subset, na.action, weights, offset,
   control = pscl::zeroinfl.control(...), model = TRUE, y = TRUE,
   x = FALSE, ...)
 }
+\arguments{
+\item{formula}{symbolic description of the model, see details.}
+
+\item{data}{arguments controlling formula processing
+    via \code{\link[stats]{model.frame}}.}
+
+\item{subset}{arguments controlling formula processing
+    via \code{\link[stats]{model.frame}}.}
+
+\item{na.action}{arguments controlling formula processing
+    via \code{\link[stats]{model.frame}}.}
+
+\item{weights}{optional numeric vector of weights.}
+
+\item{offset}{optional numeric vector with an a priori known component to be
+    included in the linear predictor of the count model. See below for more
+    information on offsets.}
+
+\item{dist}{character specification of count model family (a log link is 
+    always used).}
+
+\item{link}{character specification of link function in the binary
+    zero-inflation model (a binomial family is always used).}
+
+\item{control}{a list of control arguments specified via
+    \code{\link{zeroinfl.control}}.}
+
+\item{model}{logicals. If \code{TRUE} the corresponding components
+    of the fit (model frame, response, model matrix) are returned.}
+
+\item{y}{logicals. If \code{TRUE} the corresponding components
+    of the fit (model frame, response, model matrix) are returned.}
+
+\item{x}{logicals. If \code{TRUE} the corresponding components
+    of the fit (model frame, response, model matrix) are returned.}
+
+\item{...}{arguments passed to \code{\link{zeroinfl.control}} in the
+    default setup.}
+}
 \description{
 Fast implementation for zero-inflated Count Data Regression
 }

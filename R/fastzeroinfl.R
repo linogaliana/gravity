@@ -1,5 +1,6 @@
 #' Fast implementation for zero-inflated Count Data Regression
 #' 
+#' @inheritParams pscl::zeroinfl
 #' @import pscl
 #' @export
 
@@ -168,13 +169,13 @@ fastzeroinfl <- function(formula, data, subset, na.action, weights, offset,
     weights <- rep.int(weights, n)
   weights <- as.vector(weights)
   names(weights) <- rownames(mf)
-  offsetx <- pscl:::model_offset_2(mf, terms = mtX, offset = TRUE)
+  offsetx <- model_offset_2(mf, terms = mtX, offset = TRUE)
   if (is.null(offsetx)) 
     offsetx <- 0
   if (length(offsetx) == 1) 
     offsetx <- rep.int(offsetx, n)
   offsetx <- as.vector(offsetx)
-  offsetz <- pscl:::model_offset_2(mf, terms = mtZ, offset = FALSE)
+  offsetz <- model_offset_2(mf, terms = mtZ, offset = FALSE)
   if (is.null(offsetz)) 
     offsetz <- 0
   if (length(offsetz) == 1) 
