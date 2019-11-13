@@ -2,7 +2,7 @@ context("fastglm.nb is consistent with existing MASS::glm.nb function")
 
 fit_mass  <- MASS::glm.nb(Days ~ Sex/(Age + Eth*Lrn), data = MASS::quine,
                           control = glm.control(maxit = 12))
-fit_speed <- gravity:::fastglm.nb(Days ~ Sex/(Age + Eth*Lrn), data = MASS::quine,
+fit_speed <- gravity::fastglm.nb(Days ~ Sex/(Age + Eth*Lrn), data = MASS::quine,
                                   control = glm.control(maxit = 12))
 
 
@@ -172,7 +172,7 @@ test_that("terms", {
 fit_mass  <- MASS::glm.nb(Days ~ Sex/(Age + Eth*Lrn), data = MASS::quine,
                           control = glm.control(maxit = 12),
                           init.theta = 2)
-fit_speed <- gravity:::fastglm.nb(Days ~ Sex/(Age + Eth*Lrn), data = MASS::quine,
+fit_speed <- gravity::fastglm.nb(Days ~ Sex/(Age + Eth*Lrn), data = MASS::quine,
                                   control = glm.control(maxit = 12),
                                   init.theta = 2)
 

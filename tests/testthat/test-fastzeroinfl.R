@@ -2,13 +2,15 @@ context("fastzeroinfl is consistent with existing pscl::fastzeroinfl function")
 
 
 fit_pscl  <- pscl::zeroinfl(Days ~ Sex + Age + Eth*Lrn, data = MASS::quine)
-fit_speed  <- gravity:::fastzeroinfl(Days ~ Sex + Age + Eth*Lrn, data = MASS::quine)
+fit_speed  <- gravity::fastzeroinfl(Days ~ Sex + Age + Eth*Lrn, data = MASS::quine)
 
+fit_speed2  <- gravity::fastzeroinfl(Days ~ Sex + Age, data = MASS::quine,
+                                      dist = "negbin")
 
 
 # coefficients ==============-
 
-test_that("pscl::zeroinfl and gravity:::fastzeroinfl coef are equal [at rounding error]", {
+test_that("pscl::zeroinfl and gravity::fastzeroinfl coef are equal [at rounding error]", {
   expect_equal(coef(fit_pscl), coef(fit_speed),
                tolerance = 1e-4)
 })
@@ -69,7 +71,7 @@ test_that("df.null are the same fastzeroinfl and zeroinfl theta", {
 ## weights ====================
 
 # test_that("weights are the same fastzeroinfl and zeroinfl theta", {
-#   expect_equal(as.numeric(fit_mass$weights),
+#   expect_equal(as.numeric(fit_pscl$weights),
 #                as.numeric(fit_speed$weights)
 #   )
 # })
@@ -86,7 +88,7 @@ test_that("df.residual are the same fastzeroinfl and zeroinfl theta", {
 ## y ======================-
 
 test_that("y are the same fastzeroinfl and zeroinfl theta", {
-  expect_equal(as.numeric(fit_mass$y),
+  expect_equal(as.numeric(fit_pscl$y),
                as.numeric(fit_speed$y)
   )
 })
