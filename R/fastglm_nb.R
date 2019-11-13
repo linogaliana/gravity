@@ -5,6 +5,7 @@
 #'  reduce time and memory consumption
 #'  
 #' @inheritParams MASS::glm.nb
+#' @param ... Additional parameters
 #' 
 #' @importFrom fastglm fastglm
 #' @seealso \link{fastglm.nb} ; \link[MASS]{theta.ml} ; \link[MASS]{glm.nb}
@@ -12,7 +13,7 @@
 #' @importFrom "stats" ".getXlevels" "glm.control" "is.empty.model" "model.extract" "model.matrix" "model.offset" "model.response" "model.weights"
 #' @importFrom MASS negative.binomial
 #' @import RcppEigen
-#' @export
+#' @export fastglm.nb
 
 fastglm.nb <- function(formula, data, weights, subset, na.action, start = NULL, 
                         etastart, mustart, control = glm.control(...), method = "glm.fit", 

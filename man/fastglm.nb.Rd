@@ -94,6 +94,8 @@
   (but \code{\link{offset}()} can be used).
 }
 
+\item{...}{Additional parameters}
+
 \item{init.theta}{
   Optional initial value for the theta parameter.  If omitted a moment
   estimator after an initial fit using a Poisson GLM is used.
