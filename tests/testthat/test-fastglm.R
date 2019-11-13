@@ -1,3 +1,4 @@
+context("fastglm.nb is consistent with existing MASS::glm.nb function")
 
 fit_mass  <- MASS::glm.nb(Days ~ Sex/(Age + Eth*Lrn), data = MASS::quine,
                           control = glm.control(maxit = 12))
