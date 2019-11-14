@@ -3,7 +3,11 @@
 \name{strip}
 \alias{strip}
 \alias{strip.glm}
+\alias{strip.lm}
 \alias{strip.summary.glm}
+\alias{strip.selection}
+\alias{strip.summary.lm}
+\alias{strip.summary.selection}
 \alias{strip.zeroinfl}
 \alias{strip.summary.zeroinfl}
 \title{Strip regression objects to reduce memory needs}
@@ -12,7 +16,15 @@ strip(object, ...)
 
 \method{strip}{glm}(object)
 
+\method{strip}{lm}(object)
+
 \method{strip}{summary.glm}(object)
+
+\method{strip}{summary.selection}(object)
+
+\method{strip}{summary.lm}(object)
+
+\method{strip}{summary.selection}(object)
 
 \method{strip}{zeroinfl}(object)
 

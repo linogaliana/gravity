@@ -2,18 +2,37 @@
 % Please edit documentation in R/lighstargazer.R
 \name{lightstargazer}
 \alias{lightstargazer}
+\alias{lightstargazer.zeroinfl}
+\alias{lightstargazer.glm}
 \title{Strip regression objects to reduce memory needs}
 \usage{
 lightstargazer(light_model, ...)
+
+\method{lightstargazer}{light.zeroinfl}(light_model,
+  modelname = "\\\\textsc{Low-income}", modellabel = "Outcome",
+  modeltype = c("count", "zero"))
+
+\method{lightstargazer}{light.glm}(light_model,
+  modelname = "\\\\textsc{Low-income}", modellabel = "Outcome",
+  modeltype = c("outcome", "selection"),
+  omit = "residential_D1_destinationTRUE")
 }
 \arguments{
-\item{object}{A stripped regression by
+\item{light_model}{A stripped regression by
 \link{strip} function. 
 Accepted classes are \link[stats]{glm} or
 \link[pscl]{zeroinfl}}
+
+\item{modelname}{Model name}
+
+\item{modellabel}{Model label}
+
+\item{modeltype}{Should we use selection
+or outcome models for zero-inflated and
+Heckman models?}
 }
 \value{
-A stargazer object
+A latex table object
 }
 \description{
 Remove elements that are more related

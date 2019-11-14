@@ -108,6 +108,42 @@ strip.summary.glm <- function(object){
 }
 
 #' @rdname strip
+#' @method strip summary.selection
+#' @S3method strip summary.selection
+
+strip.selection <- function(object) {
+  
+  if (!inherits(object, "selection")) stop("object' should be a selection object") 
+  
+  object$y = c()
+  object$model = c()
+  
+  object$residuals = c()
+  object$fitted.values = c()
+  object$effects = c()
+  # object$qr$qr = c()  
+  # object$linear.predictors = c()
+  object$weights = c()
+  object$prior.weights = c()
+  object$data = c()
+  
+  
+  object$family$variance = c()
+  #object$family$dev.resids = c()
+  #object$family$aic = c()
+  object$family$validmu = c()
+  object$family$simulate = c()
+  attr(object$terms,".Environment") = c()
+  attr(object$formula,".Environment") = c()
+  
+  
+  class(object) <- c(class(object), "light.glm")
+  
+  return(object)
+}
+
+
+#' @rdname strip
 #' @method strip summary.lm
 #' @S3method strip summary.lm
 
@@ -122,6 +158,20 @@ strip.summary.lm <- function(object){
   return(object)
 }
 
+#' @rdname strip
+#' @method strip summary.selection
+#' @S3method strip summary.selection
+
+strip.summary.selection <- function(object){
+  
+  if (!inherits(object, "summary.selection")) stop("object' should be the summary of a selection object") 
+  
+  object$deviance.resid <- NULL
+  
+  class(object) <- c(class(object), "light.summary.lm")
+  
+  return(object)
+}
 
 #' @rdname strip
 #' @method strip zeroinfl
@@ -207,7 +257,24 @@ trim_big_object <- function(obj){
     return(obj_trim)
   }
   
-
+  trim_summary_selection <- function(obj){
+    
+    obj.summary <- strip(
+      summary(obj)
+    )
+    idx_outcome <- obj$param$index$betaO
+    idx_selection <- obj$param$index$betaS
+    obj_trim <- list(
+      "obj_trim" = strip(obj),
+      "se_count" = obj.summary$estimate$count[idx_outcome,"Std. Error"],
+      "se_selection" = obj.summary$estimate$zero[idx_selection,"Std. Error"],
+      "pvalues_count" = obj.summary$estimate$count[idx_outcome,"Pr(>|t|)"],
+      "pvalues_selection" = obj.summary$estimate$zero[idx_selection,"Pr(>|t|)"]
+    )
+    
+    return(obj_trim)
+  }
+  
   # FIX TO BE ABLE TO USE STARGAZER
   if (obj$call[1] == str2lang("gravity::fastzeroinfl()")) obj$call[1] <- str2lang("zeroinfl()")
 
