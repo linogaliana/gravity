@@ -5,12 +5,12 @@
 #'  memory needs to store a glm output
 #'  
 #' 
-#' @param object A stripped regression by
+#' @param light_model A stripped regression by
 #'  \link{strip} function. 
 #'  Accepted classes are \link[stats]{glm} or
 #'  \link[pscl]{zeroinfl}
 #'  
-#' @return A stargazer object
+#' @return A latex table object
 #' 
 #' @export
 
@@ -18,6 +18,15 @@ lightstargazer <- function(light_model, ...){
   UseMethod("lightstargazer")
 }
 
+#' @rdname lightstargazer
+#' @method lightstargazer light.zeroinfl
+#' @S3method lightstargazer light.zeroinfl
+#' 
+#' @param modelname Model name
+#' @param modellabel Model label
+#' @param modeltype Should we use selection
+#'  or outcome models for zero-inflated and
+#'  Heckman models?
 
 lightstargazer.zeroinfl <- function(light_model,
                                 modelname = "\\textsc{Low-income}",
@@ -120,6 +129,9 @@ lightstargazer.zeroinfl <- function(light_model,
   return(template_stargazer2)
 }
 
+#' @rdname lightstargazer
+#' @method lightstargazer light.glm
+#' @S3method lightstargazer light.glm
 
 lightstargazer.glm <- function(light_model,
                                modelname = "\\textsc{Low-income}",

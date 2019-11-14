@@ -56,6 +56,41 @@ strip.glm <- function(object) {
   return(object)
 }
 
+#' @rdname strip
+#' @method strip lm
+#' @S3method strip lm
+
+strip.lm <- function(object) {
+  
+  if (!inherits(object, "lm")) stop("object' should be a lm object") 
+  
+  object$y = c()
+  object$model = c()
+  
+  object$residuals = c()
+  object$fitted.values = c()
+  object$effects = c()
+  # object$qr$qr = c()  
+  # object$linear.predictors = c()
+  object$weights = c()
+  object$prior.weights = c()
+  object$data = c()
+  
+  
+  object$family$variance = c()
+  #object$family$dev.resids = c()
+  #object$family$aic = c()
+  object$family$validmu = c()
+  object$family$simulate = c()
+  attr(object$terms,".Environment") = c()
+  attr(object$formula,".Environment") = c()
+  
+  
+  class(object) <- c(class(object), "light.glm")
+  
+  return(object)
+}
+
 
 #' @rdname strip
 #' @method strip summary.glm
@@ -68,6 +103,21 @@ strip.summary.glm <- function(object){
   object$deviance.resid <- NULL
   
   class(object) <- c(class(object), "light.summary.glm")
+  
+  return(object)
+}
+
+#' @rdname strip
+#' @method strip summary.lm
+#' @S3method strip summary.lm
+
+strip.summary.lm <- function(object){
+  
+  if (!inherits(object, "summary.lm")) stop("object' should be the summary of a lm object") 
+  
+  object$deviance.resid <- NULL
+  
+  class(object) <- c(class(object), "light.summary.lm")
   
   return(object)
 }
