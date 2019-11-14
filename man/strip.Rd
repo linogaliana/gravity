@@ -19,7 +19,15 @@ strip(object, ...)
 \method{strip}{summary.zeroinfl}(object)
 }
 \arguments{
-\item{object}{A regression object}
+\item{object}{A regression object or summary.
+Accepted classes are \link[stats]{glm} or
+\link[pscl]{zeroinfl}}
+}
+\value{
+Initial object stripped from
+ heavy elements. Initial class is returned
+ with a new one indicating the object has
+ been stripped.
 }
 \description{
 Remove elements that are more related
