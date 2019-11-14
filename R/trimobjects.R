@@ -4,8 +4,16 @@
 #' Remove elements that are more related
 #'  to prediction than model to reduce
 #'  memory needs to store a glm output
+#'  
 #' 
-#' @param object A regression object
+#' @param object A regression object or summary.
+#'  Accepted classes are \link[stats]{glm} or
+#'  \link[pscl]{zeroinfl}
+#'  
+#' @return Initial object stripped from
+#'  heavy elements. Initial class is returned
+#'  with a new one indicating the object has
+#'  been stripped.
 #' 
 #' @export
 
@@ -42,6 +50,9 @@ strip.glm <- function(object) {
   attr(object$terms,".Environment") = c()
   attr(object$formula,".Environment") = c()
   
+  
+  class(object) <- c(class(object), "light.glm")
+  
   return(object)
 }
 
@@ -55,6 +66,9 @@ strip.summary.glm <- function(object){
   if (!inherits(object, "summary.glm")) stop("object' should be the summary of a glm object") 
   
   object$deviance.resid <- NULL
+  
+  class(object) <- c(class(object), "light.summary.glm")
+  
   return(object)
 }
 
@@ -88,6 +102,8 @@ strip.zeroinfl <- function(object) {
   attr(object$terms,".Environment") = c()
   attr(object$formula,".Environment") = c()
   
+  class(object) <- c(class(object), "light.zeroinfl")
+  
   return(object)
 }
 
@@ -103,6 +119,57 @@ strip.summary.zeroinfl <- function(object){
   object$residuals <- NULL
   object$fitted.values <- NULL
   #object$model <- NULL
+  class(object) <- c(class(object), "light.summary.zeroinfl")
   
   return(object)
+}
+
+
+#' Trim a big object to reduce memory need
+#' 
+#' This function returns as little information
+#'  from obj needed
+#'  
+#' @return A list with following elements
+#' \itemize{
+#'   \item object - \link{strip} object
+#'   \item summary - \link{strip} summary object. For
+#'    \link[pscl]{zeroinfl} objects, contain elements
+#'    \code{obj_trim}, \code{se_count}, \code{se_selection}
+#' }
+#' @param obj An object whose class is 
+#'  accepted by \link{strip} method
+#' @export
+
+trim_big_object <- function(obj){
+  
+  trim_summary_zeroinfl <- function(obj){
+    
+    obj.summary <- strip(
+      summary(obj)
+    )
+    obj_trim <- list(
+      "obj_trim" = strip(obj),
+      "se_count" = obj.summary$coefficients$count[,"Std. Error"],
+      "se_selection" = obj.summary$coefficients$zero[,"Std. Error"]
+    )
+    
+    return(obj_trim)
+  }
+  
+
+  # FIX TO BE ABLE TO USE STARGAZER
+  if (obj$call[1] == str2lang("gravity::fastzeroinfl()")) obj$call[1] <- str2lang("zeroinfl()")
+
+  if (inherits(obj, "zeroinfl")){
+    list(
+      "object" = strip(obj),
+      "summary" = trim_summary_zeroinfl(obj)
+    )
+  } else{
+    list(
+      "object" = strip(obj),
+      "summary" = strip(summary(obj))
+    )
+  }
 }

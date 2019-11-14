@@ -21,7 +21,7 @@ library(gravity)
   
 # Data used
   
-```{r}
+```{r, eval = FALSE}
 df <- data.frame(x1 = rnorm(1e6), x2 = rnorm(1e6), x3 = rnorm(1e6))
 df$y <- exp(2*df$x1 - 0.02*df$x2 - df$x3  + rnorm(1e6))
 df$y2 <- floor(df$y)
@@ -31,7 +31,7 @@ head(df)
 
 
 
-```{r}
+```{r, eval = FALSE}
 system.time(
   MASS::glm.nb(y2 ~ x1 + x2 + x3 + offset(off),
                control = glm.control(epsilon = 1e-2),
@@ -44,11 +44,11 @@ system.time(
 )
 ```
 
-```{r}
+```{r, eval = FALSE}
 mean(df$y2 == 0)
 ```
 
-```{r}
+```{r, eval = FALSE}
 system.time(
   pscl::zeroinfl(formula = y2 ~ x1 + x2 + x3,
                  offset = off,
@@ -67,7 +67,7 @@ system.time(
 
 # Memory
 
-```{r}
+```{r, eval = FALSE}
 profvis::profvis({
   MASS::glm.nb(y2 ~ x1 + x2 + x3 + offset(off),
                control = glm.control(epsilon = 1e-2),
@@ -81,7 +81,7 @@ profvis::profvis({
 ```
 
 
-```{r}
+```{r, eval = FALSE}
 profvis::profvis({
   pscl::zeroinfl(formula = y2 ~ x1 + x2 + x3,
                  offset = off,
@@ -100,7 +100,7 @@ profvis::profvis({
 
 # Test depending on speed
 
-```{r}
+```{r, eval = FALSE}
 df <- data.frame(x1 = rnorm(1e6), x2 = rnorm(1e6))
 df$y <- exp(2*df$x1 - df$x2  + rnorm(1e6))
 df$y2 <- floor(df$y)
