@@ -126,6 +126,17 @@ test_speed2 <- lapply(c(1e3, 1e4, 1e5, 5e5, 1e6, 3e6, 5e6, 8e6, 1e7), function(n
                    data = df[1:n,])
   )['elapsed']
 )}))
+
+vitesse_zeroinfl <- data.frame(
+  size = c(1e3, 1e4, 1e5, 5e5, 1e6, 3e6, 5e6, 8e6, 1e7),
+  pscl = as.numeric(test_speed),
+  gravity = as.numeric(test_speed2)
+)
+
+vitesse_zeroinfl <- reshape2::melt(vitesse_zeroinfl, id.vars = "size",
+               value.name = "speed")
+
+ggplot2::ggplot(vitesse_zeroinfl) + ggplot2::geom_line(ggplot2::aes(x = size, y = speed, color = variable))
 ```
 
 
