@@ -8,14 +8,20 @@
 \usage{
 lightstargazer(light_model, ...)
 
-\method{lightstargazer}{light.zeroinfl}(light_model,
-  modelname = "\\\\textsc{Low-income}", modellabel = "Outcome",
-  modeltype = c("count", "zero"))
+\method{lightstargazer}{light.zeroinfl}(
+  light_model,
+  modelname = "\\\\textsc{Low-income}",
+  modellabel = "Outcome",
+  modeltype = c("count", "zero")
+)
 
-\method{lightstargazer}{light.glm}(light_model,
-  modelname = "\\\\textsc{Low-income}", modellabel = "Outcome",
+\method{lightstargazer}{light.glm}(
+  light_model,
+  modelname = "\\\\textsc{Low-income}",
+  modellabel = "Outcome",
   modeltype = c("outcome", "selection"),
-  omit = "residential_D1_destinationTRUE")
+  omit = "residential_D1_destinationTRUE"
+)
 }
 \arguments{
 \item{light_model}{A stripped regression by

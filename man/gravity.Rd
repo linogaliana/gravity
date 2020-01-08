@@ -3,7 +3,6 @@
 \docType{package}
 \name{gravity}
 \alias{gravity}
-\alias{gravity-package}
 \title{gravity}
 \description{
 Gravity model with large scale data

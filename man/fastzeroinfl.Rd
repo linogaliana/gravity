@@ -4,11 +4,21 @@
 \alias{fastzeroinfl}
 \title{Fast implementation for zero-inflated Count Data Regression}
 \usage{
-fastzeroinfl(formula, data, subset, na.action, weights, offset,
-  dist = c("poisson", "negbin", "geometric"), link = c("logit",
-  "probit", "cloglog", "cauchit", "log"),
-  control = pscl::zeroinfl.control(...), model = TRUE, y = TRUE,
-  x = FALSE, ...)
+fastzeroinfl(
+  formula,
+  data,
+  subset,
+  na.action,
+  weights,
+  offset,
+  dist = c("poisson", "negbin", "geometric"),
+  link = c("logit", "probit", "cloglog", "cauchit", "log"),
+  control = pscl::zeroinfl.control(...),
+  model = TRUE,
+  y = TRUE,
+  x = FALSE,
+  ...
+)
 }
 \arguments{
 \item{formula}{symbolic description of the model, see details.}
@@ -35,7 +45,7 @@ fastzeroinfl(formula, data, subset, na.action, weights, offset,
     zero-inflation model (a binomial family is always used).}
 
 \item{control}{a list of control arguments specified via
-    \code{\link{zeroinfl.control}}.}
+    \code{\link[pscl]{zeroinfl.control}}.}
 
 \item{model}{logicals. If \code{TRUE} the corresponding components
     of the fit (model frame, response, model matrix) are returned.}
@@ -46,7 +56,7 @@ fastzeroinfl(formula, data, subset, na.action, weights, offset,
 \item{x}{logicals. If \code{TRUE} the corresponding components
     of the fit (model frame, response, model matrix) are returned.}
 
-\item{...}{arguments passed to \code{\link{zeroinfl.control}} in the
+\item{...}{arguments passed to \code{\link[pscl]{zeroinfl.control}} in the
     default setup.}
 }
 \description{

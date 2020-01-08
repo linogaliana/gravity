@@ -4,10 +4,25 @@
 \alias{fastglm.nb}
 \title{Fit a negative binomial generalized linear model}
 \usage{
-\method{fastglm}{nb}(formula, data, weights, subset, na.action,
-  start = NULL, etastart, mustart, control = glm.control(...),
-  method = "glm.fit", model = TRUE, x = FALSE, y = TRUE,
-  contrasts = NULL, ..., init.theta = NULL, link = log)
+\method{fastglm}{nb}(
+  formula,
+  data,
+  weights,
+  subset,
+  na.action,
+  start = NULL,
+  etastart,
+  mustart,
+  control = glm.control(...),
+  method = "glm.fit",
+  model = TRUE,
+  x = FALSE,
+  y = TRUE,
+  contrasts = NULL,
+  ...,
+  init.theta = NULL,
+  link = log
+)
 }
 \arguments{
 \item{formula}{
