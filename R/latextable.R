@@ -79,9 +79,9 @@ extract_coeff <- function(idx, model_list, modeltype){
 #'  \link[stargazer]{stargazer} standards but proposes a
 #'  simplified framework. Customization is limiteds
 #'  
-#'  @return A character vector.
+#' @return A character vector.
 #'  
-#'  @examples data("bioChemists", package = "pscl")
+#' @examples data("bioChemists", package = "pscl")
 #' 
 #' fm_zip    <- pscl::zeroinfl(art ~ . | ., data = bioChemists)
 #' fm_zip2   <- pscl::zeroinfl(art ~ 1 | ., data = bioChemists)
@@ -93,15 +93,6 @@ extract_coeff <- function(idx, model_list, modeltype){
 #' model_list <- lapply(list(fm_zip, fm_zip2,
 #'                           glm_model, fm_zip3,
 #'                           fm_zip5), gravity::strip)
-#' 
-#' 
-#' model_list <- list(
-#'   light_model$object,
-#'   light_model2$object,
-#'   light_model3$object,
-#'   light_model4$object,
-#'   light_model5$object
-#' )
 #' 
 #' cat(
 #'   gravity:::light_table(model_list = model_list,
