@@ -32,6 +32,8 @@ strip.glm <- function(object) {
   object$y = c()
   object$model = c()
   
+  object$coefficients <- summary(object)$coefficients
+  
   object$residuals = c()
   object$fitted.values = c()
   object$effects = c()
@@ -63,6 +65,8 @@ strip.glm <- function(object) {
 strip.lm <- function(object) {
   
   if (!inherits(object, "lm")) stop("object' should be a lm object") 
+  
+  object$coefficients <- summary(object)$coefficients
   
   object$y = c()
   object$model = c()
@@ -114,6 +118,8 @@ strip.summary.glm <- function(object){
 strip.selection <- function(object) {
   
   if (!inherits(object, "selection")) stop("object' should be a selection object") 
+  
+  object$coefficients <- summary(object)$coefficients
   
   object$y = c()
   object$model = c()
@@ -180,6 +186,8 @@ strip.summary.selection <- function(object){
 strip.zeroinfl <- function(object) {
   
   if (!inherits(object, "zeroinfl")) stop("object' should be a zeroinfl object") 
+  
+  object$coefficients <- summary(object)$coefficients
   
   object$y = c()
   object$model = c()
