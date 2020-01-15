@@ -108,7 +108,7 @@ light_table <- function(
   title = "Title",
   label = "label",
   dep.var.labels = "Label dep.var.labels",
-  dep.var.separate = NULL
+  dep.var.separate = NULL,
   column.labels = rep("bla", length(model_list)),
   column.separate = NULL,
   covariate.labels = NULL,
