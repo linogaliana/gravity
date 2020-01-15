@@ -108,9 +108,11 @@ light_table <- function(
   title = "Title",
   label = "label",
   dep.var.labels = "Label dep.var.labels",
+  dep.var.separate = NULL
   column.labels = rep("bla", length(model_list)),
-  covariate.labels = NULL,
   column.separate = NULL,
+  covariate.labels = NULL,
+  order_variable = NULL,
   add.lines = "rows to add",
   notes = "notes to add",
   omit = ""){
@@ -137,12 +139,38 @@ light_table <- function(
   
   table_total <- c(header,tabular_header)
   
-  depvar_header <- sprintf("
+  
+  
+    if (is.null(dep.var.separate) | (length(dep.var.labels)>1)){
+      # in that case, we just put dep.var.labels      
+      depvar_header <- sprintf("
    & \\multicolumn{%s}{c}{\\textit{Dependent variable:}} \\\\ 
 \\cline{2-%s}
 \\\\[-1.8ex] & \\multicolumn{%s}{c}{%s} \\\\
   ", ncols_models, ncols_models+1,
-                           ncols_models, dep.var.labels)
+                               ncols_models, dep.var.labels)
+      
+    } else{
+      
+      labels_depvar <- rep("\\multicolumn{%s}{c}{%s}", length(dep.var.separate) + 1)
+      length_labels <- c(cumsum(dep.var.separate), ncols_models - sum(dep.var.separate))
+      labels_depvar <- sapply(1:length(length_labels), function(i){
+        sprintf(
+          labels_depvar[i],
+          length_labels[i],
+          dep.var.labels[i])
+      }
+      )
+      labels_depvar <- paste(labels_depvar, collapse = " & ")
+      
+      depvar_header <- sprintf("
+   & \\multicolumn{%s}{c}{\\textit{Dependent variable:}} \\\\ 
+\\cline{2-%s}
+\\\\[-1.8ex] & %s \\\\
+  ", ncols_models, ncols_models+1,  labels_depvar)
+      
+    }
+  
   
   table_total <- c(table_total,depvar_header)
   
@@ -168,7 +196,7 @@ light_table <- function(
   
   # PART II : BODY -------
   
-  arrange_coeff <- function(text_coeff){
+  arrange_coeff <- function(text_coeff, order_variable = NULL){
     
     if (is.null(nrow(text_coeff))){
       text_coeff <- rbind(text_coeff, "")
@@ -181,8 +209,29 @@ light_table <- function(
       variable.name = "obj"
     )
     
-    body_table <- body_table[order(body_table$variable,
-                                   body_table$obj), ]
+    list_variables_model <-  unique(body_table[,'variable'])
+
+    if (!is.null(order_variable)){
+      # we add variables not listed in order_variable
+      order_variable <- c(order_variable[order_variable %in% list_variables_model],
+                          as.character(list_variables_model)[!(list_variables_model %in% order_variable)]
+      )
+    }    
+    
+    
+    if (is.null(order_variable)){
+      body_table <- body_table[order(body_table$variable,
+                                     body_table$obj), ]
+    } else{
+      order_data <- data.frame(
+        "variable" = order_variable,
+        order = seq_len(length(order_variable))
+      )
+      body_table <- merge(body_table, order_data, by = "variable")
+      body_table <- body_table[order(body_table$order,
+                                     body_table$obj), ]
+      body_table$order <- NULL
+    }
     body_table$variable <- as.character(body_table$variable)
     
     body_table$value <- paste0(" & ", body_table$value)
@@ -191,21 +240,14 @@ light_table <- function(
   }
   
   
-  coeff_body <- lapply(coeff_data, arrange_coeff)
+  coeff_body <- lapply(coeff_data, arrange_coeff, order_variable)
   
   coeff_body <- Reduce(function(dtf1, dtf2) merge(dtf1, dtf2, by = c("variable","obj"), all = TRUE),
                        coeff_body)
   coeff_body[is.na(coeff_body)] <- " & "
   
   
-  # PUT CONSTANT IN LAST POSITION
-  constant_idx <- which(coeff_body[,'variable'] == "(Intercept)")
   
-  if (!is.null(constant_idx)){
-    rows <- seq_len(nrow(coeff_body))
-    rows <- rows[-constant_idx]
-    coeff_body <- coeff_body[c(rows, constant_idx),]
-  }
   
   if (omit != ""){
     coeff_body <- coeff_body[!(coeff_body[,'variable'] %in% omit),]
@@ -220,6 +262,23 @@ light_table <- function(
   
   coeff_body <- coeff_body[,!(names(coeff_body) %in% "obj")]
   body_table <- apply(coeff_body, 1, paste, collapse="")
+  
+  if (!is.null(order_variable)){
+    order_data <- data.frame(
+      "variable" = order_variable,
+      order = seq_len(length(order_variable))
+    )
+    coeff_body <- merge(coeff_body, order_data, by = "variable")
+    coeff_body <- coeff_body[order(coeff_body$order), ]    
+  }
+  
+  # PUT CONSTANT IN LAST POSITION
+  constant_idx <- which(coeff_body[,'variable'] == "(Intercept)")
+  if (!is.null(constant_idx)){
+    rows <- seq_len(nrow(coeff_body))
+    rows <- rows[-constant_idx]
+    coeff_body <- coeff_body[c(rows, constant_idx),]
+  }  
   
   body_table <- paste0(body_table, "\\\\")
   
@@ -245,21 +304,30 @@ light_table <- function(
     if (inherits(mod,"zeroinfl")){
       llk <- mod$loglik
       bic <- BIC(mod)
+      link_count <- if (mod$dist == "negbin") "Negative Binomial" else "Poisson"
+      link_selection <- Hmisc::capitalize(mod$link)
     } else{
       llk <- logLik(mod)
       k <- attributes(llk)$df
       bic <- -2*as.numeric(llk) + k*log(mod$n)
       llk <- as.numeric(llk)
+      link_count <- ""
+      link_selection <- ""
     }
     
     df <- data.frame(
-      stat = c("Observations",
+      stat = c(
+        "Count distribution",
+        "Selection distribution",
+        "Observations",
                "Log likelihood",
                "Log likelihood (by obs.)",
                "Bayesian information criterion"),
-      order = seq_len(4),
+      order = seq_len(6L),
       val = as.character(
-        c(format(mod$n, digits = 0),
+        c(link_count,
+          link_selection,
+          format(mod$n, digits = 0),
           format(llk, digits = 1L, nsmall = 1L),
           format(llk/mod$n, digits = 3L, nsmall = 3L),
           format(bic, digits = 1L, nsmall = 1L)
