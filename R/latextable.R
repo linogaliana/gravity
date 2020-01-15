@@ -53,7 +53,7 @@ extract_coeff <- function(idx, model_list, modeltype){
 #' @param title Table caption
 #' @param label Table label
 #' @param dep.var.labels Label for dependent variables
-#' @param column.labels
+#' @param column.labels Label for columns
 #' @param covariate.labels A character vector of labels for
 #'  columns in regression tables.
 #'  Their layout, in terms of the number of columns
