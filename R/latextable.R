@@ -115,6 +115,7 @@ light_table <- function(
   order_variable = NULL,
   stats.var.separate = NULL,
   notes = "notes to add",
+  add.lines = "",
   omit = ""){
   
   ncols_models <- length(model_list)
@@ -141,7 +142,7 @@ light_table <- function(
   
   
   
-    if (is.null(dep.var.separate) | (length(dep.var.labels)>1)){
+    if (is.null(dep.var.separate) | (length(dep.var.labels)==1)){
       # in that case, we just put dep.var.labels      
       depvar_header <- sprintf("
    & \\multicolumn{%s}{c}{\\textit{Dependent variable:}} \\\\ 
@@ -415,9 +416,10 @@ light_table <- function(
   
   
   # - should be $-$
-  table_total <- gsub(pattern = "-", replacement = "$-$",
-                      x = table_total)
+  # table_total <- gsub(pattern = "-", replacement = "$-$",
+  #                     x = table_total)
   
   
   return(table_total)
 }
+
