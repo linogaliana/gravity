@@ -113,7 +113,7 @@ light_table <- function(
   column.separate = NULL,
   covariate.labels = NULL,
   order_variable = NULL,
-  add.lines = "rows to add",
+  stats.var.separate = NULL,
   notes = "notes to add",
   omit = ""){
   
@@ -320,17 +320,17 @@ light_table <- function(
         "Count distribution",
         "Selection distribution",
         "Observations",
-               "Log likelihood",
-               "Log likelihood (by obs.)",
-               "Bayesian information criterion"),
+        "Log likelihood",
+        "Log likelihood (by obs.)",
+        "Bayesian information criterion"),
       order = seq_len(6L),
       val = as.character(
         c(link_count,
           link_selection,
-          format(mod$n, digits = 0),
-          format(llk, digits = 1L, nsmall = 1L),
-          format(llk/mod$n, digits = 3L, nsmall = 3L),
-          format(bic, digits = 1L, nsmall = 1L)
+          format(mod$n, digits = 0,  big.mark=",", scientific = FALSE),
+          format(llk, digits = 0, big.mark=",", scientific = FALSE),
+          format(llk/mod$n, digits = 3L, nsmall = 3L, big.mark=",", scientific = FALSE),
+          format(bic, digits = 0L, big.mark=",", scientific = FALSE)
         )
       )
     )
@@ -340,7 +340,7 @@ light_table <- function(
       df <- rbind(data.frame(stat = "$\\alpha$ (dispersion)",
                              order = 0,
                              val = as.character(
-                               format(1/mod$theta, digits = 1L, nsmall = 1L))
+                               format(1/mod$theta, digits = 3L, nsmall = 3L))
       ), df)
     }
     
@@ -353,6 +353,23 @@ light_table <- function(
   statsdf <- statsdf[, names(statsdf) != "order"]
   statsdf[, ] <- lapply(statsdf[, ], as.character)
   statsdf[is.na(statsdf)] <- ""
+  
+  
+  if (!is.null(stats.var.separate)){
+    
+    labels_stats <- rep("\\multicolumn{%s}{c}{%s}", length(stats.var.separate) + 1)
+    length_labels <- c(cumsum(stats.var.separate), ncols_models - sum(stats.var.separate))
+    statsdf2 <- lapply(1:length(length_labels), function(i){
+      sprintf(
+        labels_stats[i],
+        length_labels[i],
+        statsdf[,1 + 2*i])
+    }
+    )
+    statsdf <- cbind(statsdf[,1], do.call(cbind, statsdf2))
+    
+  }
+  
   statsdf <- apply(statsdf, 1, paste, collapse = " & ")
   stats_table <- paste0(statsdf, " \\\\")
   
