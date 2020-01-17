@@ -27,3 +27,16 @@ listcoeff.light.zeroinfl <- function(object, ...){
   return(allcoeffs)
 }
 
+listcoeff.light.glm <- function(object, ...){
+  
+  if (!inherits(object, "light.glm")) stop("Object is not light.glm")
+  
+  allcoeffs <- object$coefficients
+  
+  allcoeffs <- rownames(allcoeffs)
+  allcoeffs <- unique(allcoeffs)
+  
+  allcoeffs <- gsub(pattern = "\\_", replacement = "\\\\_", allcoeffs)
+  
+  return(allcoeffs)
+}

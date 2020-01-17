@@ -60,8 +60,34 @@ liststats.light.glm <- function(object, ...){
   
   llk <- object$twologlik/2
   bic <- BIC(object)
-  link_count <- if (object$dist == "negbin") "Negative Binomial" else "Poisson"
-  link_selection <- Hmisc::capitalize(object$link)
+  link_count <- if (object$call[1] == "glm.nb()") "Negative Binomial" else "Poisson"
+  link_selection <- ""
   
-  return(allcoeffs)
+  df <- data.frame(
+    stat = c(
+      "Count distribution",
+      "Selection distribution",
+      "Observations",
+      "Log likelihood",
+      "Log likelihood (by obs.)",
+      "Bayesian information criterion"),
+    order = seq_len(6L),
+    val = as.character(
+      c(link_count,
+        link_selection,
+        format(object$n, digits = 0,  big.mark=",", scientific = FALSE),
+        format(llk, digits = 0, big.mark=",", scientific = FALSE),
+        format(llk/object$n, digits = 3L, nsmall = 3L, big.mark=",", scientific = FALSE),
+        format(bic, digits = 0L, big.mark=",", scientific = FALSE)
+      )
+    )
+  )
+  
+  df <- rbind(data.frame(stat = "$\\alpha$ (dispersion)",
+                         order = 0,
+                         val = as.character(
+                           format(1/object$theta, digits = 3L, nsmall = 3L))
+  ), df)  
+  
+  return(df)
 }
