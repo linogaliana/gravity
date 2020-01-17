@@ -104,12 +104,13 @@ strip.zeroinfl <- function(object) {
   
   object$y = c()
   object$model = c()
+  object$offset = c()
   
   object$residuals = c()
   object$fitted.values = c()
   object$effects = c()
-  # object$qr$qr = c()  
-  # object$linear.predictors = c()
+  object$qr = c()
+  object$linear.predictors = c()
   object$weights = c()
   object$prior.weights = c()
   object$data = c()
@@ -122,6 +123,8 @@ strip.zeroinfl <- function(object) {
   object$family$simulate = c()
   attr(object$terms,".Environment") = c()
   attr(object$formula,".Environment") = c()
+  
+  
   
   class(object) <- c(class(object), "light.zeroinfl")
   

@@ -306,9 +306,9 @@ light_table <- function(
   
   
   if (!is.null(covariate.labels)){
+    n_replace <- min(length(list_variables), length(covariate.labels))
     labels_covariates <- covariate.labels[1:n_replace]
     value_covariates <- list_variables[list_variables != "(Intercept)"]
-    n_replace <- min(length(list_variables), length(covariate.labels))
     names(labels_covariates) <- value_covariates[1:n_replace]
     body_table <-  qdap::mgsub(
       pattern = value_covariates,
