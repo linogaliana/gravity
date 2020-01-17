@@ -100,6 +100,7 @@ extract_coeff <- function(idx, model_list, modeltype){
 #'   sep = "\n"
 #' )
 #' 
+#' @importFrom qdap mgsub
 #' @export
 
 light_table <- function(
@@ -256,22 +257,41 @@ light_table <- function(
   
   coeff_body <- coeff_body[!(coeff_body[,'variable'] == "Log(theta)"),]
   
-  list_variables <- unique(coeff_body[,'variable'])
-  
-  rows_sd <- grep("\\(.*?\\)", coeff_body$value.x)
-  coeff_body$variable[sort(c(rows_sd,rows_sd+1))] <- ""
-  
-  coeff_body <- coeff_body[,!(names(coeff_body) %in% "obj")]
-  body_table <- apply(coeff_body, 1, paste, collapse="")
   
   if (!is.null(order_variable)){
+    
     order_data <- data.frame(
       "variable" = order_variable,
       order = seq_len(length(order_variable))
     )
     coeff_body <- merge(coeff_body, order_data, by = "variable")
-    coeff_body <- coeff_body[order(coeff_body$order), ]    
+    coeff_body <- coeff_body[order(coeff_body$order), ]
+    
+  } else{
+    
+    order_variable <- unique(do.call(c, lapply(model_list, listcoeff)))
+    order_data <- data.frame(
+      "variable" = order_variable,
+      order = seq_len(length(order_variable))
+    )
+    coeff_body <- merge(coeff_body, order_data, by = "variable",
+                        all.x = TRUE)
+    coeff_body <- coeff_body[order(coeff_body$order), ]
+    
   }
+  
+  list_variables <- unique(coeff_body[,'variable'])
+  
+  rows_sd <- grep("\\(.*?\\)", coeff_body$value.x)
+  coeff_body$variable[sort(c(rows_sd,rows_sd+1))] <- ""
+  
+  
+  coeff_body <- coeff_body[,!(names(coeff_body) %in% c("obj","order"))]
+  body_table <- apply(coeff_body, 1, paste, collapse="")
+  
+  body_table <- gsub(pattern = "-", replacement = "$-$",
+       body_table)
+  
   
   # PUT CONSTANT IN LAST POSITION
   constant_idx <- which(coeff_body[,'variable'] == "(Intercept)")
@@ -285,11 +305,14 @@ light_table <- function(
   
   
   if (!is.null(covariate.labels)){
+    labels_covariates <- covariate.labels[1:n_replace]
+    value_covariates <- list_variables[list_variables != "(Intercept)"]
     n_replace <- min(length(list_variables), length(covariate.labels))
-    body_table <- stringr::str_replace(
-      string = body_table,
-      pattern = list_variables[1:n_replace],
-      replacement = covariate.labels[1:n_replace]
+    names(labels_covariates) <- value_covariates[1:n_replace]
+    body_table <-  qdap::mgsub(
+      pattern = value_covariates,
+      replacement = labels_covariates,
+      body_table,
     )
   }
   
