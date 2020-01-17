@@ -117,6 +117,7 @@ light_table <- function(
   stats.var.separate = NULL,
   notes = "notes to add",
   add.lines = "",
+  rules_between_covariates = NULL,
   omit = ""){
   
   ncols_models <- length(model_list)
@@ -316,8 +317,11 @@ light_table <- function(
     )
   }
   
+  if (!is.null(rules_between_covariates)){
+    body_table[rules_between_covariates*3] <- paste0(body_table[rules_between_covariates*3], " \\hline \\\\[-1.8ex] ")
+  }
   
-  table_total <- c(table_total, body_table, "\\hline \\\\[-1.8ex] ")
+  table_total <- c(table_total, body_table, "\\hline \\hline \\\\[-1.8ex] ")
   
   
   
@@ -397,6 +401,9 @@ light_table <- function(
   statsdf <- apply(statsdf, 1, paste, collapse = " & ")
   stats_table <- paste0(statsdf, " \\\\")
   
+  stats_table <- gsub(pattern = "-", replacement = "$-$",
+                  stats_table)
+  
   
   table_total <- c(table_total, stats_table, 
                    "\\hline ",
@@ -413,8 +420,8 @@ light_table <- function(
   if (add.lines != ""){
     foot_table <- c(foot_table,
                     sprintf(
-                      " & \\multicolumn{%s}{r}{%s} \\\\ ",
-                      ncols_models,
+                      " \\multicolumn{%s}{p{0.9\\linewidth}}{%s} \\\\ ",
+                      ncols_models+1,
                       add.lines
                     ))
   }
