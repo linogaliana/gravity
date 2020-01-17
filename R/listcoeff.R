@@ -1,4 +1,12 @@
 
+#' A small method to extract coefficient names from
+#'  econometric models
+#'  
+#' @param object An object
+#' @param ... Additional arguments
+#' @return A character vector with names
+#'  that can be passed to latex
+
 #' @export
 listcoeff <- function(object, ...){
   UseMethod("listcoeff")
