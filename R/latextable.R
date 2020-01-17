@@ -11,9 +11,13 @@ extract_coeff <- function(idx, model_list, modeltype){
   
   if (!(inherits(model_list[[idx]], "zeroinfl") |
         (inherits(model_list[[idx]], "negbin")))){
+    
+    tstat_var <- 'Pr(>|t|)'
+    if (inherits(mod, "glm")) tstat_var <- 'Pr(>|z|)'
+    
     mod <- model_list[[idx]]
     text_coeff <- paste0(round(mod$coefficients[,'Estimate'],3),
-                         sapply(mod$coefficients[,'Pr(>|t|)'], signif_stars))
+                         sapply(mod$coefficients[,tstat_var], signif_stars))
     text_sd <- paste0("(",round(mod$coefficients[,'Std. Error'],3),")")
     text_coeff <- cbind("variable" = rownames(mod$coefficients),text_coeff, text_sd)
     text_coeff[,'variable'] <- gsub("_","\\_",text_coeff[,'variable'],
@@ -118,7 +122,8 @@ light_table <- function(
   notes = "notes to add",
   add.lines = "",
   rules_between_covariates = NULL,
-  omit = ""){
+  omit = "",
+  landscape = FALSE){
   
   ncols_models <- length(model_list)
   
@@ -390,7 +395,7 @@ light_table <- function(
     
     labels_stats <- rep("\\multicolumn{%s}{c}{%s}", length(stats.var.separate) + 1)
     length_labels <- c(cumsum(stats.var.separate), ncols_models - sum(stats.var.separate))
-    length_labels <- length_labels[length_labels>0]
+    # length_labels <- length_labels[length_labels>0]
     statsdf2 <- lapply(1:length(length_labels), function(i){
       sprintf(
         labels_stats[i],
@@ -435,7 +440,7 @@ light_table <- function(
   
   table_total <- c(table_total, foot_table)
   
-  
+  if (landscape) table_total <- c("\\begin{landscape}", table_total, "\\end{landscape}")
   
   return(table_total)
 }

@@ -58,7 +58,7 @@ liststats.light.glm <- function(object, ...){
   
   if (!inherits(object, "light.glm")) stop("Object is not light.glm")
   
-  llk <- object$twologlik/2
+  llk <- as.numeric(logLik(object))
   bic <- BIC(object)
   link_count <- if (object$call[1] == "glm.nb()") "Negative Binomial" else "Poisson"
   link_selection <- ""
@@ -83,11 +83,17 @@ liststats.light.glm <- function(object, ...){
     )
   )
   
+  if (!is.null(object$theta)){
+    alpha <- as.character(
+      format(1/object$theta, digits = 3L, nsmall = 3L)
+    )
+  } else{
+    alpha <- ""
+  }
+  
   df <- rbind(data.frame(stat = "$\\alpha$ (dispersion)",
                          order = 0,
-                         val = as.character(
-                           format(1/object$theta, digits = 3L, nsmall = 3L))
-  ), df)  
+                         val = alpha), df)  
   
   return(df)
 }

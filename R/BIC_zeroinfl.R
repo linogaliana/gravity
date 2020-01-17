@@ -41,7 +41,7 @@ BIC.light.zeroinfl <- function(object, ...){
 
 BIC.light.glm <- function(object, ...){
   
-  llk <- object$twologlik/2
+  llk <- as.numeric(logLik(object))
   k <- nrow(object$coefficients)
   
   if (!is.null(object$theta)) k <- k + 1
