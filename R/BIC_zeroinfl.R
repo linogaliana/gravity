@@ -12,12 +12,36 @@
 #' 
 #' @import stats
 #' @export
+#' 
 
 BIC.zeroinfl <- function(object, ...){
+  
+  if (inherits(object,"light.zeroinfl")) return(
+    BIC.light.zeroinfl(object, ...)
+  )
+  
   # We fit 2 objects coefficients + theta parameter
   k <- length(object$coefficients$count) + length(object$coefficients$zero)
   if (!is.null(object$theta)) k <- k + 1
   return(
     -2*object$loglik + k*log(object$n)
   )
+  
+}
+
+
+BIC.light.zeroinfl <- function(object, ...){
+  k <- nrow(object$coefficients$count) + nrow(object$coefficients$zero)
+  return(
+    -2*object$loglik + k*log(object$n)
+  )
+}
+
+
+
+BIC.light.glm <- function(object, ...){
+  
+  llk <- object$twologlik
+  k <- nrow(object$coefficients)
+  
 }
