@@ -10,11 +10,13 @@ Details: This package is suited for large scale data that fit into memory.
             It is based on \code{Rcpp} and \code{fastglm} to be faster
             and more memory-parcimonious
 License: GPL (>= 2)
-Imports: fastglm,
+Imports:
     MASS,
     pscl,
     Rcpp (>= 1.0.2),
-    RcppEigen (>= 0.3.3.5.0)
+    RcppEigen (>= 0.3.3.5.0),
+    fastglm,
+    qdap
 LinkingTo: Rcpp, RcppEigen
 References: <Silva, J. S., & Tenreyro, S. (2006). The log of gravity. The Review of Economics and statistics, 88(4), 641-658.>
 RoxygenNote: 7.0.2
