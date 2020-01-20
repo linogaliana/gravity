@@ -16,7 +16,8 @@ Imports:
     Rcpp (>= 1.0.2),
     RcppEigen (>= 0.3.3.5.0),
     fastglm,
-    qdap
+    qdap,
+    Hmisc
 LinkingTo: Rcpp, RcppEigen
 References: <Silva, J. S., & Tenreyro, S. (2006). The log of gravity. The Review of Economics and statistics, 88(4), 641-658.>
 RoxygenNote: 7.0.2
