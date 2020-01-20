@@ -8,6 +8,9 @@ using namespace Numer;
 typedef Eigen::Map<Eigen::MatrixXd> MapMat;
 typedef Eigen::Map<Eigen::VectorXd> MapVec;
 
+
+
+
 class ZIP: public MFuncGrad
 {
 private:
@@ -16,9 +19,9 @@ private:
   const MapVec Y;
 public:
   ZIP(const MapMat x_, const MapMat z_, const MapVec y_) : X(x_), Z(z_), Y(y_) {}
-
   
-
+  
+  
   double f_grad(Constvec& beta, Constvec& gamma,
                 Refvec grad)
   {
@@ -26,24 +29,27 @@ public:
     //   sum(log(1 + exp(X * beta))) - y' * X * beta
     
     
-    // 
-    Eigen::VectorXd eta = X*beta + offsetx ;
+    //
+    // Eigen::VectorXd eta = X*beta + offsetx ;
+    Eigen::VectorXd eta = X*beta ;
     Eigen::VectorXd mu = exp(eta);
-    Eigen::VectorXd etaz = Z*gamma + offsetz ;
+    // Eigen::VectorXd etaz = Z*gamma + offsetz ;
+    Eigen::VectorXd etaz = Z*gamma ;
     Eigen::VectorXd muz = linkinv(etaz);
     Eigen::VectorXd clogdens0 = -mu;
-    Eigen::VectorXd Y1 = (Y==0) ;
+    
+    
+    Eigen::VectorXd Y1 = ifelse(Y > 0, 1, 0);
+    Eigen::VectorXd dens0 = muz * (1 - Y1) + exp(log(1 - muz) + clogdens0) ;
+    
+    Eigen::VectorXd wres_count = ifelse(Y > 0,  Y - mu,
+                                        -exp(-log(dens0) +
+                                          log(1 - muz) + clogdens0 + log(mu)))
+      
+      colSums(cbind(wres_count * weights * X, wres_zero *
+        weights * Z))
 
-    
-    Eigen::VectorXd dens0 <- muz * (1 - as.numeric(Y1)) + exp(log(1 - muz) + clogdens0) ;
-    
-   wres_count <- ifelse(Y1, Y - mu, -exp(-log(dens0) + 
-     log(1 - muz) + clogdens0 + log(mu)))
-   wres_zero <- ifelse(Y1, -1/(1 - muz) * linkobj$mu.eta(etaz), 
-                       (linkobj$mu.eta(etaz) - exp(clogdens0) * linkobj$mu.eta(etaz))/dens0)
-   
-    
-    Eigen::VectorXd xbeta = X * beta;
+      Eigen::VectorXd xbeta = X * beta;
     const double yxbeta = Y.dot(xbeta);
     // X * beta => exp(X * beta)
     xbeta = xbeta.array().exp();
@@ -58,25 +64,11 @@ public:
     
     return f;
   }
+  
+  
+  
+  
 };
-
-
-gradPoisson <- function(parms) {
-  eta <- as.vector(X %*% parms[1:kx] + offsetx)
-  mu <- exp(eta)
-  etaz <- as.vector(Z %*% parms[(kx + 1):(kx + kz)] + 
-    offsetz)
-  muz <- linkinv(etaz)
-  clogdens0 <- -mu
-  dens0 <- muz * (1 - as.numeric(Y1)) + exp(log(1 - muz) + 
-    clogdens0)
-  wres_count <- ifelse(Y1, Y - mu, -exp(-log(dens0) + 
-    log(1 - muz) + clogdens0 + log(mu)))
-  wres_zero <- ifelse(Y1, -1/(1 - muz) * linkobj$mu.eta(etaz), 
-                      (linkobj$mu.eta(etaz) - exp(clogdens0) * linkobj$mu.eta(etaz))/dens0)
-  colSums(cbind(wres_count * weights * X, wres_zero * 
-    weights * Z))
-}
 
 
 // [[Rcpp::export]]
