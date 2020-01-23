@@ -119,15 +119,18 @@ double loglik_ZIP(Rcpp::NumericVector params,
   Rcpp::NumericVector beta = params[Rcpp::Range(0, kx-1)];
   Rcpp::NumericVector gamma = params[Rcpp::Range(kx, params.length())];
   
-  Rcpp::NumericVector mu = xx * beta + offsetx ;
+  Eigen::VectorXd xbeta = xx * beta;
+  Rcpp::NumericVector muz = zz * gamma ; // + offsetz ;
+  
+  Rcpp::NumericVector mu = xbeta ; // + offsetx ;
   
   
   double phi;
   
   if (link == "logit"){
-    phi = invlogit(zz * gamma + offsetz) ;
+    phi = invlogit(muz + offsetz) ;
   } else{
-    phi = invprobit(zz * gamma + offsetz) ;
+    phi = invprobit(muz + offsetz) ;
   }
   
   double loglik0 = log(phi + exp(log(1 - phi) - mu));
