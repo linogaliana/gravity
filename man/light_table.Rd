@@ -10,12 +10,17 @@ light_table(
   title = "Title",
   label = "label",
   dep.var.labels = "Label dep.var.labels",
+  dep.var.separate = NULL,
   column.labels = rep("bla", length(model_list)),
-  covariate.labels = NULL,
   column.separate = NULL,
-  add.lines = "rows to add",
+  covariate.labels = NULL,
+  order_variable = NULL,
+  stats.var.separate = NULL,
   notes = "notes to add",
-  omit = ""
+  add.lines = "",
+  rules_between_covariates = NULL,
+  omit = "",
+  landscape = FALSE
 )
 }
 \arguments{
@@ -31,11 +36,7 @@ model is not zeroinfl}
 
 \item{dep.var.labels}{Label for dependent variables}
 
-\item{covariate.labels}{A character vector of labels for
-columns in regression tables.
-Their layout, in terms of the number of columns
-associated with each label, is given by the
-argument `column.separate`.}
+\item{column.labels}{Label for columns}
 
 \item{column.separate}{A numeric vector that specifies how
 column.labels should be laid out across regression table
@@ -48,9 +49,15 @@ or the regression table contains more columns than are
 referred to in `column.separate`, a value of `1`
 is assumed for each *excess* column label.}
 
-\item{add.lines}{Rows to add in model statistics part}
+\item{covariate.labels}{A character vector of labels for
+columns in regression tables.
+Their layout, in terms of the number of columns
+associated with each label, is given by the
+argument `column.separate`.}
 
 \item{notes}{Notes that should be added at the end}
+
+\item{add.lines}{Rows to add in model statistics part}
 
 \item{omit}{List of variables that should be removed from
  the table
@@ -79,15 +86,6 @@ fm_zip5   <- MASS::glm.nb(art ~ 1, data = bioChemists)
 model_list <- lapply(list(fm_zip, fm_zip2,
                           glm_model, fm_zip3,
                           fm_zip5), gravity::strip)
-
-
-model_list <- list(
-  light_model$object,
-  light_model2$object,
-  light_model3$object,
-  light_model4$object,
-  light_model5$object
-)
 
 cat(
   gravity:::light_table(model_list = model_list,

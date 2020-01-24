@@ -4,13 +4,13 @@
 \alias{strip}
 \alias{strip.glm}
 \alias{strip.lm}
+\alias{strip.zeroinfl}
 \alias{strip.summary.glm}
 \alias{strip.selection}
 \alias{strip.summary.lm}
 \alias{strip.summary.selection}
-\alias{strip.zeroinfl}
 \alias{strip.summary.zeroinfl}
-\title{Strip regression objects to reduce memory needs}
+\title{strip: strip regressions}
 \usage{
 strip(object, ...)
 
@@ -18,15 +18,15 @@ strip(object, ...)
 
 \method{strip}{lm}(object)
 
+\method{strip}{zeroinfl}(object)
+
 \method{strip}{summary.glm}(object)
 
-\method{strip}{summary.selection}(object)
+\method{strip}{selection}(object)
 
 \method{strip}{summary.lm}(object)
 
 \method{strip}{summary.selection}(object)
-
-\method{strip}{zeroinfl}(object)
 
 \method{strip}{summary.zeroinfl}(object)
 }
@@ -34,6 +34,9 @@ strip(object, ...)
 \item{object}{A regression object or summary.
 Accepted classes are \link[stats]{glm} or
 \link[pscl]{zeroinfl}}
+
+\item{...}{Additional arguments that should be
+considered}
 }
 \value{
 Initial object stripped from
@@ -42,6 +45,9 @@ Initial object stripped from
  been stripped.
 }
 \description{
+Strip regression objects to reduce memory needs
+}
+\details{
 Remove elements that are more related
  to prediction than model to reduce
  memory needs to store a glm output
