@@ -146,17 +146,16 @@ Rcpp::NumericVector loglik_ZIP(Rcpp::NumericVector params,
     phi = invprobit(wrap(muz)) ;
   }
   
-  Rcpp::NumericVector mu2 = wrap(mu) ;
+  
+  Rcpp::NumericVector mu2 = exp(wrap(mu)) ;
   
   Rcpp::NumericVector loglik0 = log(phi + exp(log(1 - phi) - mu2));
   Rcpp::NumericVector loglik1(n);
   
-  return mu2;
-
   double loglik;
   for (int i = 0; i < y.length(); i++){
-    loglik1[i] = log(1 - phi[i]) + R::dpois(y[i], mu2[i], true);
     if (y[i]>0){
+      loglik1[i] = log(1 - phi[i]) + R::dpois(y[i], mu2[i], true);
       loglik += weights[i]*loglik1[i];
     } else{
       loglik += weights[i]*loglik0[i];
