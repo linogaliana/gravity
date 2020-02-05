@@ -9,27 +9,67 @@ Z <- cbind(
 )
 Y <- round(exp(rnorm(200)))
 
-loglik_ZIP(params = params,
-           x = X,
-           z = Z,
-           y = Y,
-           link = "probit")
 
-loglik_ZIP_R(params = params,
-           X = X,
-           Z = Z,
-           Y = Y,
-           link = "probit")
+testthat::test_that(
+  "Log-likelihood in C++ consistent with R implementation",{
+    
+    testthat::expect_equal(
+      loglik_ZIP(params = params,
+                 x = X,
+                 z = Z,
+                 y = Y,
+                 link = "probit"),
+      loglik_ZIP_R(params = params,
+                   X = X,
+                   Z = Z,
+                   Y = Y,
+                   link = "probit")
+    )
+    
+    testthat::expect_equal(
+      loglik_ZIP(params = params,
+                 x = X,
+                 z = Z,
+                 y = Y,
+                 link = "logit"),
+      loglik_ZIP_R(params = params,
+                   X = X,
+                   Z = Z,
+                   Y = Y,
+                   link = "logit")
+    )
+    
+  }
+)
 
 
-loglik_ZIP(params = params,
-           x = X,
-           z = Z,
-           y = Y,
-           link = "logit")
 
-loglik_ZIP_R(params = params,
-             X = X,
-             Z = Z,
-             Y = Y,
-             link = "logit")
+
+
+# microbenchmark::microbenchmark(
+#   loglik_ZIP(params = params,
+#              x = X,
+#              z = Z,
+#              y = Y,
+#              link = "probit"),
+#   loglik_ZIP_R(params = params,
+#                X = X,
+#                Z = Z,
+#                Y = Y,
+#                link = "probit"),
+#   times = 50L
+# )
+# 
+# microbenchmark::microbenchmark(
+#   loglik_ZIP(params = params,
+#              x = X,
+#              z = Z,
+#              y = Y,
+#              link = "logit"),
+#   loglik_ZIP_R(params = params,
+#                X = X,
+#                Z = Z,
+#                Y = Y,
+#                link = "logit"),
+#   times = 50L
+# )

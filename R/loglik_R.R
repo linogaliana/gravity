@@ -18,7 +18,7 @@ loglik_ZIP_R <- function(params, X, Z, Y,
   loglik0 <- log(phi + exp(log(1 - phi) - mu))
   loglik1 <- log(1 - phi) + dpois(Y, lambda = mu, log = TRUE)
   
-  Y0 <- (Y>0)
+  Y0 <- (Y==0)
   
   loglik <- sum(weights[Y0] * loglik0[Y0]) + sum(weights[!Y0] * 
                                                    loglik1[!Y0])
