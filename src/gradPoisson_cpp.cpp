@@ -110,13 +110,16 @@ double loglik_ZIP(Rcpp::NumericVector params,
                   Rcpp::NumericMatrix x,
                   Rcpp::NumericMatrix z,
                   Rcpp::NumericVector y,
+                  Rcpp::NumericVector weights,
+                  Rcpp::NumericVector offsetx,
+                  Rcpp::NumericVector offsetz,
                   Rcpp::String link = "probit"){
 
   int n = x.nrow();
   
-  Rcpp::NumericVector offsetx(n);
-  Rcpp::NumericVector offsetz(n);
-  Rcpp::NumericVector weights(n, 1.0);
+  // Rcpp::NumericVector offsetx(n);
+  // Rcpp::NumericVector offsetz(n);
+  // Rcpp::NumericVector weights(n, 1.0);
   
   Rcpp::IntegerVector yy = Rcpp::as<IntegerVector>(y);
   const MapMat xx = Rcpp::as<MapMat>(x);
@@ -127,7 +130,6 @@ double loglik_ZIP(Rcpp::NumericVector params,
   
   int kx = x.ncol();
   
-
   Rcpp::NumericVector beta = params[Rcpp::Range(0, kx-1)];
   Rcpp::NumericVector gamma = params[Rcpp::Range(kx, params.length())];
   
@@ -147,10 +149,11 @@ double loglik_ZIP(Rcpp::NumericVector params,
   
   Rcpp::NumericVector mu2 = exp(wrap(mu)) ;
   
+  // Rcpp::NumericVector loglik0 = log(phi + exp(log(1 - phi) - mu2));
   Rcpp::NumericVector loglik0 = log(phi + exp(log(1 - phi) - mu2));
   Rcpp::NumericVector loglik1(n);
   
-  double loglik = 0;
+  double loglik;
   for (int i = 0; i < n; i++){
     if (y[i]>0){
       loglik1[i] += log(1 - phi[i]) + R::dpois(yy[i], mu2[i], true);
