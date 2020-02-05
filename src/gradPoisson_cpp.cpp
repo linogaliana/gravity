@@ -60,6 +60,14 @@ Rcpp::NumericVector logit(Rcpp::NumericVector x) {
   return result;
 }
 
+// [[Rcpp::export]]
+Rcpp::NumericVector probit(Rcpp::NumericVector x) {
+  Rcpp::NumericVector result = Rcpp::qnorm(x);
+  return result;
+}
+
+
+
 //' @export
 //' @rdname logit
 // [[Rcpp::export]]
