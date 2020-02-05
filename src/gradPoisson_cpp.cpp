@@ -101,65 +101,72 @@ Rcpp::NumericVector invprobit(Rcpp::NumericVector x) {
 
 
 
-
 typedef Eigen::Map<Eigen::MatrixXd> MapMat;
 typedef Eigen::Map<Eigen::VectorXd> MapVec;
 
+//' @export
+// [[Rcpp::export]]
+Rcpp::NumericVector loglik_ZIP(Rcpp::NumericVector params,
+                  Rcpp::NumericMatrix x,
+                  Rcpp::NumericMatrix z,
+                  Rcpp::NumericVector y,
+                  Rcpp::String link = "probit"){
+
+  int n = x.nrow();
+  
+  Rcpp::NumericVector offsetx(n);
+  Rcpp::NumericVector offsetz(n);
+  Rcpp::NumericVector weights(y.length(), 1.0);
+  
+  
+  const MapMat xx = Rcpp::as<MapMat>(x);
+  const MapVec yy = Rcpp::as<MapVec>(y);
+  const MapMat zz = Rcpp::as<MapMat>(z);
+  const MapVec offx = Rcpp::as<MapVec>(offsetx);
+  const MapVec offz = Rcpp::as<MapVec>(offsetz);
+  //const MapVec w = Rcpp::as<MapVec>(weights);
+  
+  int kx = x.ncol();
+  
+
+  Rcpp::NumericVector beta = params[Rcpp::Range(0, kx-1)];
+  Rcpp::NumericVector gamma = params[Rcpp::Range(kx, params.length())];
+  
+  const MapVec beta2 = Rcpp::as<MapVec>(beta);
+  const MapVec gamma2 = Rcpp::as<MapVec>(gamma);
+  
+  const Eigen::VectorXd mu = xx*beta2 + offx ;
+  const Eigen::VectorXd muz = zz*gamma2 + offz ;
+
+  Rcpp::NumericVector phi;
+
+  if (link == "logit"){
+    phi = invlogit(wrap(muz)) ;
+  } else{
+    phi = invprobit(wrap(muz)) ;
+  }
+  
+  Rcpp::NumericVector mu2 = wrap(mu) ;
+  
+  Rcpp::NumericVector loglik0 = log(phi + exp(log(1 - phi) - mu2));
+  Rcpp::NumericVector loglik1(n);
+  
+  return mu2;
+
+  double loglik;
+  for (int i = 0; i < y.length(); i++){
+    loglik1[i] = log(1 - phi[i]) + R::dpois(y[i], mu2[i], true);
+    if (y[i]>0){
+      loglik += weights[i]*loglik1[i];
+    } else{
+      loglik += weights[i]*loglik0[i];
+    }
+  }
 
 
+  return loglik;
 
-
-// double loglik_ZIP(Rcpp::NumericVector params,
-//                   Rcpp::NumericMatrix x,
-//                   Rcpp::NumericMatrix z,
-//                   Rcpp::NumericVector y,
-//                   char link = "probit"){
-// 
-//   const MapMat xx = Rcpp::as<MapMat>(x);
-//   const MapVec yy = Rcpp::as<MapVec>(y);
-//   const MapMat zz = Rcpp::as<MapMat>(z);
-// 
-//   int kx = x.ncol();
-// 
-//   Rcpp::NumericVector offsetx(x.nrow());
-//   Rcpp::NumericVector offsetz(z.nrow());
-//   Rcpp::NumericVector weights(y.length(), 1.0);
-// 
-//   Rcpp::NumericVector beta = params[Rcpp::Range(0, kx-1)];
-//   
-//   return beta ;
-//   // Rcpp::NumericVector gamma = params[Rcpp::Range(kx, params.length())];
-//   // 
-//   // Rcpp::NumericVector xbeta = xx * beta;
-//   // Rcpp::NumericVector muz = zz * gamma ; // + offsetz ;
-//   // 
-//   // Rcpp::NumericVector mu = xbeta ; // + offsetx ;
-//   // 
-//   // 
-//   // Rcpp::NumericVector phi;
-//   // 
-//   // if (link == "logit"){
-//   //   phi = invlogit(muz + offsetz) ;
-//   // } else{
-//   //   phi = invprobit(muz + offsetz) ;
-//   // }
-//   // 
-//   // Rcpp::NumericVector loglik0 = log(phi + exp(log(1 - phi) - mu));
-//   // Rcpp::NumericVector loglik1 = log(1 - phi) + Rcpp::dpois(y, lambda = mu, log = true);
-//   // 
-//   // double loglik;
-//   // for (int i = 0; i < y.length(); i++){
-//   //   if (y[i]>0){
-//   //     loglik += sum(weights[i]*loglik1[i]);
-//   //   } else{
-//   //     loglik += sum(weights[i]*loglik0[i]);
-//   //   }
-//   // }
-//   // 
-//   // 
-//   // return loglik;
-// 
-// }
+}
 
 
 // double gradPoisson_cpp(NumericVector params,
