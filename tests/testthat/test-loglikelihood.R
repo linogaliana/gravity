@@ -10,6 +10,8 @@ Z <- cbind(
 Y <- round(exp(rnorm(200)))
 
 
+# ZERO INFLATED POISSON REGRESSION ---------------------
+
 testthat::test_that(
   "Log-likelihood in C++ consistent with R implementation",{
     
@@ -43,7 +45,20 @@ testthat::test_that(
 )
 
 
+# ZERO INFLATED NEGATIVE BINOMIAL REGRESSION ---------------------
 
+
+loglik_ZINB_R(params = params,
+             X = X,
+             Z = Z,
+             Y = Y,
+             link = "probit")
+
+loglik_ZINB_R(params = params,
+              X = X,
+              Z = Z,
+              Y = Y,
+              link = "logit")
 
 
 # microbenchmark::microbenchmark(
