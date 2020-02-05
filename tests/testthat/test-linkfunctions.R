@@ -129,3 +129,34 @@ testthat::test_that(
   }
 )
 
+
+# TESTS DE VITESSE ------------------
+
+# x <- runif(1e6)
+# 
+# microbenchmark::microbenchmark(
+#   invprobit(x),
+#   make.link("probit")$linkinv(x),
+#   times = 50L
+# )
+# 
+# microbenchmark::microbenchmark(
+#   invlogit(x),
+#   make.link("logit")$linkinv(x),
+#   times = 50L
+# )
+
+# x <- runif(1e6)
+
+# microbenchmark::microbenchmark(
+#   probit(x),
+#   make.link("probit")$linkfun(x),
+#   times = 50L
+# )
+# 
+# microbenchmark::microbenchmark(
+#   logit(x),
+#   make.link("logit")$linkfun(x),
+#   times = 50L
+# )
+
