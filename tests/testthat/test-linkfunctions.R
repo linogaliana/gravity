@@ -46,6 +46,16 @@ testthat::test_that(
   }
 )
 
+testthat::test_that(
+  paste0("R and Rcpp return only positive values"
+  ), {
+    testthat::expect_condition(
+      invlogit(x)>0
+    )
+  }
+)
+
+
 x <- .Machine$double.eps/2
 testthat::test_that(
   paste0("R and Rcpp return the same value",
@@ -84,6 +94,18 @@ testthat::test_that(
 # INVERSE PROBIT LINKS ------------------
 
 x <- rnorm(1000L)
+
+
+
+testthat::test_that(
+  paste0("R and Rcpp return only positive values"
+  ), {
+    testthat::expect_condition(
+      invprobit(x)>0
+    )
+  }
+)
+
 
 testthat::test_that(
   paste0("R and Rcpp return the same value",
