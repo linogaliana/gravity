@@ -1,15 +1,14 @@
 loglik_ZIP_R <- function(params, X, Z, Y,
+                         weights = rep(1,nrow(X)),
+                         offsetx = rep(0,nrow(X)),
+                         offsetz = rep(0,nrow(Z)),
                          link = c("probit","logit")) {
   
   link <- match.arg(link)
   
-  n <- nrow(X)
   kx <- ncol(X)
   kz <- ncol(Z)
-  weights <- rep(1,n)
-  offsetx <- rep(0,n)
-  offsetz <- rep(0,n)
-  
+
   linkinv <- make.link(link)$linkinv
 
   mu <- as.vector(exp(X %*% params[1:kx] + offsetx))
