@@ -106,7 +106,7 @@ typedef Eigen::Map<Eigen::VectorXd> MapVec;
 
 //' @export
 // [[Rcpp::export]]
-Rcpp::NumericVector loglik_ZIP(Rcpp::NumericVector params,
+double loglik_ZIP(Rcpp::NumericVector params,
                   Rcpp::NumericMatrix x,
                   Rcpp::NumericMatrix z,
                   Rcpp::NumericVector y,
@@ -116,11 +116,10 @@ Rcpp::NumericVector loglik_ZIP(Rcpp::NumericVector params,
   
   Rcpp::NumericVector offsetx(n);
   Rcpp::NumericVector offsetz(n);
-  Rcpp::NumericVector weights(y.length(), 1.0);
+  Rcpp::NumericVector weights(n, 1.0);
   
-  
+  Rcpp::IntegerVector yy = Rcpp::as<IntegerVector>(y);
   const MapMat xx = Rcpp::as<MapMat>(x);
-  const MapVec yy = Rcpp::as<MapVec>(y);
   const MapMat zz = Rcpp::as<MapMat>(z);
   const MapVec offx = Rcpp::as<MapVec>(offsetx);
   const MapVec offz = Rcpp::as<MapVec>(offsetz);
@@ -146,16 +145,15 @@ Rcpp::NumericVector loglik_ZIP(Rcpp::NumericVector params,
     phi = invprobit(wrap(muz)) ;
   }
   
-  
   Rcpp::NumericVector mu2 = exp(wrap(mu)) ;
   
   Rcpp::NumericVector loglik0 = log(phi + exp(log(1 - phi) - mu2));
   Rcpp::NumericVector loglik1(n);
   
-  double loglik;
-  for (int i = 0; i < y.length(); i++){
+  double loglik = 0;
+  for (int i = 0; i < n; i++){
     if (y[i]>0){
-      loglik1[i] = log(1 - phi[i]) + R::dpois(y[i], mu2[i], true);
+      loglik1[i] += log(1 - phi[i]) + R::dpois(yy[i], mu2[i], true);
       loglik += weights[i]*loglik1[i];
     } else{
       loglik += weights[i]*loglik0[i];
@@ -163,8 +161,7 @@ Rcpp::NumericVector loglik_ZIP(Rcpp::NumericVector params,
   }
 
 
-  return loglik;
-
+  return loglik ;
 }
 
 

@@ -7,10 +7,29 @@ Z <- cbind(
   X,
   replicate(2, rnorm(200))
 )
-Y <- rnorm(200)
+Y <- round(exp(rnorm(200)))
 
 loglik_ZIP(params = params,
            x = X,
            z = Z,
            y = Y,
            link = "probit")
+
+loglik_ZIP_R(params = params,
+           X = X,
+           Z = Z,
+           Y = Y,
+           link = "probit")
+
+
+loglik_ZIP(params = params,
+           x = X,
+           z = Z,
+           y = Y,
+           link = "logit")
+
+loglik_ZIP_R(params = params,
+             X = X,
+             Z = Z,
+             Y = Y,
+             link = "logit")
