@@ -6,18 +6,6 @@
 
 using namespace Rcpp;
 
-// logistic_reg
-Rcpp::NumericVector logistic_reg(Rcpp::NumericMatrix x, Rcpp::NumericVector y);
-RcppExport SEXP _gravity_logistic_reg(SEXP xSEXP, SEXP ySEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type x(xSEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type y(ySEXP);
-    rcpp_result_gen = Rcpp::wrap(logistic_reg(x, y));
-    return rcpp_result_gen;
-END_RCPP
-}
 // logit
 Rcpp::NumericVector logit(Rcpp::NumericVector x);
 RcppExport SEXP _gravity_logit(SEXP xSEXP) {
@@ -26,6 +14,17 @@ BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::NumericVector >::type x(xSEXP);
     rcpp_result_gen = Rcpp::wrap(logit(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// probit
+Rcpp::NumericVector probit(Rcpp::NumericVector x);
+RcppExport SEXP _gravity_probit(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(probit(x));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -41,14 +40,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // invprobit
-Rcpp::NumericVector invprobit(Rcpp::NumericVector x, double eps);
-RcppExport SEXP _gravity_invprobit(SEXP xSEXP, SEXP epsSEXP) {
+Rcpp::NumericVector invprobit(Rcpp::NumericVector x);
+RcppExport SEXP _gravity_invprobit(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::NumericVector >::type x(xSEXP);
-    Rcpp::traits::input_parameter< double >::type eps(epsSEXP);
-    rcpp_result_gen = Rcpp::wrap(invprobit(x, eps));
+    rcpp_result_gen = Rcpp::wrap(invprobit(x));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -97,10 +95,10 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_gravity_logistic_reg", (DL_FUNC) &_gravity_logistic_reg, 2},
     {"_gravity_logit", (DL_FUNC) &_gravity_logit, 1},
+    {"_gravity_probit", (DL_FUNC) &_gravity_probit, 1},
     {"_gravity_invlogit", (DL_FUNC) &_gravity_invlogit, 1},
-    {"_gravity_invprobit", (DL_FUNC) &_gravity_invprobit, 2},
+    {"_gravity_invprobit", (DL_FUNC) &_gravity_invprobit, 1},
     {"_gravity_score", (DL_FUNC) &_gravity_score, 4},
     {"_gravity_info", (DL_FUNC) &_gravity_info, 4},
     {"_gravity_speed_theta_ml", (DL_FUNC) &_gravity_speed_theta_ml, 5},
