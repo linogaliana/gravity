@@ -1,5 +1,36 @@
 testthat::context("Inverse logit and probit links well implemented")
 
+
+# LOGIT LINKS ---------------------------
+
+x <- runif(1000L)
+
+testthat::test_that(
+  "R and Rcpp return the same value",{
+    testthat::expect_equal(
+      logit(x),
+      make.link("logit")$linkfun(x)
+    )
+  }
+)
+
+
+  
+# PROBIT LINK ---------------------------
+
+x <- runif(1000L)
+
+testthat::test_that(
+  "R and Rcpp return the same value",{
+    testthat::expect_equal(
+      probit(x),
+      make.link("probit")$linkfun(x)
+    )
+  }
+)
+
+
+
 # INVERSE LOGIT LINKS -------------------
 
 x <- rnorm(1000L)
