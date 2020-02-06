@@ -1,4 +1,4 @@
-gradPoisson <- function(params, X, Z, Y,
+grad_ZIP_R <- function(params, X, Z, Y,
                         weights = NULL,
                         offsetx = NULL,
                         offsetz = NULL,
