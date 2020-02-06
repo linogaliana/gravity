@@ -288,11 +288,14 @@ Rcpp::NumericVector grad_ZIP(Rcpp::NumericVector params,
   const Eigen::VectorXd muz = zz*gamma2 + offz ;
   
   Rcpp::NumericVector phi;
+  Rcpp::NumericVector dmudeta;
   
   if (link == "logit"){
     phi = invlogit(wrap(muz)) ;
+    dmudeta = dmudeta_logit(phi) ;
   } else{
     phi = invprobit(wrap(muz)) ;
+    dmudeta = dmudeta_probit(phi) ;
   }
   
   Rcpp::NumericVector mu2 = exp(wrap(mu)) ;
