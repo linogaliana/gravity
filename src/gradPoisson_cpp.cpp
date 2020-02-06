@@ -254,7 +254,7 @@ Rcpp::NumericVector dmudeta_logit(Rcpp::NumericVector eta){
 }
 
 // [[Rcpp::export]]
-Rcpp::NumericVector grad_ZIP(Rcpp::NumericVector params,
+Rcpp::NumericMatrix grad_ZIP(Rcpp::NumericVector params,
                   Rcpp::NumericMatrix x,
                   Rcpp::NumericMatrix z,
                   Rcpp::NumericVector y,
@@ -307,18 +307,18 @@ Rcpp::NumericVector grad_ZIP(Rcpp::NumericVector params,
   Rcpp::NumericVector wres_count(n) ;
   Rcpp::NumericVector wres_zero(n) ;
   
-  Rcpp::NumericVector dens0 = exp(log(1-muz) + clogdens0) ;
+  Rcpp::NumericVector dens0 = exp(log(1.0-muz2) + clogdens0) ;
   
   Rcpp::NumericMatrix term1 = x ;
   Rcpp::NumericMatrix term2 = z ;
   
   for (int i = 0; i < n; i++){
     if (y[i]==0){
-      dens0[i] += muz[i]
-      wres_count[i] += -exp(-log(dens0[i]) + 
-        log(1 - muz[i]) + clogdens0[i] + log(mu[i])
+      dens0[i] += muz2[i];
+      wres_count[i] -= exp(-log(dens0[i]) + 
+        log(1 - muz2[i]) + clogdens0[i] + log(mu[i])
       );
-      wres_zero[i] -= -(dmudeta[i] - exp(clogdens0[i])*dmudeta[i]);
+      wres_zero[i] -= dmudeta[i] - exp(clogdens0[i])*dmudeta[i];
       wres_zero[i] /= dens0[i]; 
     } else{
       wres_count[i] += y[i]-mu[i];
@@ -327,9 +327,17 @@ Rcpp::NumericVector grad_ZIP(Rcpp::NumericVector params,
     term1(i,_) = wres_count[i]*weights[i]*term1(i,_);
     term2(i,_) = wres_zero[i]*weights[i]*term2(i,_) ;
   }
-  
 
-  return clogdens0 ;
+  Rcpp::NumericMatrix out = no_init_matrix(n, kx + kz);
+  for (int j = 0; j < kx + kz; j++) {
+    if (j < kx) {
+      out(_, j) = x(_, j);
+    } else {
+      out(_, j) = z(_, j - kx);
+    }
+  }  
+
+  return out ;
 }
 
 
