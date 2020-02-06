@@ -21,3 +21,7 @@ testthat::test_that(
 #   dmudeta_probit(p),
 #   make.link("probit")$mu.eta(p)
 # )
+# microbenchmark::microbenchmark(
+#   dmudeta_logit(p),
+#   make.link("logit")$mu.eta(p)
+# )

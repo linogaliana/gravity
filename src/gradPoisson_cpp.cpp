@@ -246,6 +246,14 @@ Rcpp::NumericVector dmudeta_probit(Rcpp::NumericVector eta){
 
 
 // [[Rcpp::export]]
+Rcpp::NumericVector dmudeta_logit(Rcpp::NumericVector eta){
+
+  Rcpp::NumericVector opexp = 1 + exp(eta);
+  
+  return (opexp-1)/pow(opexp, 2);
+}
+
+// [[Rcpp::export]]
 Rcpp::NumericVector grad_ZIP(Rcpp::NumericVector params,
                   Rcpp::NumericMatrix x,
                   Rcpp::NumericMatrix z,
