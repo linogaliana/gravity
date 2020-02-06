@@ -48,17 +48,52 @@ testthat::test_that(
 # ZERO INFLATED NEGATIVE BINOMIAL REGRESSION ---------------------
 
 
-loglik_ZINB_R(params = params,
-             X = X,
-             Z = Z,
-             Y = Y,
-             link = "probit")
+testthat::test_that(
+  "Log-likelihood in C++ consistent with R implementation",{
+    
+    testthat::expect_equal(
+      loglik_ZINB(params = c(params,1),
+                  x = X,
+                  z = Z,
+                  y = Y,
+                  weights = rep(1, nrow(X)),
+                  offsetx = rep(0, nrow(X)),
+                  offsetz = rep(0, nrow(Z)),
+                  link = "probit"),
+      loglik_ZINB_R(params = c(params,1),
+                    X = X,
+                    Z = Z,
+                    Y = Y,
+                    weights = rep(1, nrow(X)),
+                    offsetx = rep(0, nrow(X)),
+                    offsetz = rep(0, nrow(Z)),
+                    link = "probit")
+    )
+    
+    testthat::expect_equal(
+      loglik_ZINB(params = c(params,1),
+                  x = X,
+                  z = Z,
+                  y = Y,
+                  weights = rep(1, nrow(X)),
+                  offsetx = rep(0, nrow(X)),
+                  offsetz = rep(0, nrow(Z)),
+                  link = "logit"),
+      loglik_ZINB_R(params = c(params,1),
+                    X = X,
+                    Z = Z,
+                    Y = Y,
+                    weights = rep(1, nrow(X)),
+                    offsetx = rep(0, nrow(X)),
+                    offsetz = rep(0, nrow(Z)),
+                    link = "logit")
+      
+    )
+    
+  }
+)
 
-loglik_ZINB_R(params = params,
-              X = X,
-              Z = Z,
-              Y = Y,
-              link = "logit")
+
 
 
 # microbenchmark::microbenchmark(
@@ -87,4 +122,45 @@ loglik_ZINB_R(params = params,
 #                Y = Y,
 #                link = "logit"),
 #   times = 50L
+# )
+
+
+
+# microbenchmark::microbenchmark(
+#   loglik_ZINB(params = c(params,1),
+#               x = X,
+#               z = Z,
+#               y = Y,
+#               weights = rep(1, nrow(X)),
+#               offsetx = rep(0, nrow(X)),
+#               offsetz = rep(0, nrow(Z)),
+#               link = "logit"),
+#   loglik_ZINB_R(params = c(params,1),
+#                 X = X,
+#                 Z = Z,
+#                 Y = Y,
+#                 weights = rep(1, nrow(X)),
+#                 offsetx = rep(0, nrow(X)),
+#                 offsetz = rep(0, nrow(Z)),
+#                 link = "logit")  
+# )
+
+
+# microbenchmark::microbenchmark(
+#   loglik_ZINB(params = c(params,1),
+#               x = X,
+#               z = Z,
+#               y = Y,
+#               weights = rep(1, nrow(X)),
+#               offsetx = rep(0, nrow(X)),
+#               offsetz = rep(0, nrow(Z)),
+#               link = "probit"),
+#   loglik_ZINB_R(params = c(params,1),
+#                 X = X,
+#                 Z = Z,
+#                 Y = Y,
+#                 weights = rep(1, nrow(X)),
+#                 offsetx = rep(0, nrow(X)),
+#                 offsetz = rep(0, nrow(Z)),
+#                 link = "probit")  
 # )
