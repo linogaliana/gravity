@@ -61,7 +61,5 @@ loglik_ZINB_R <- function(params, X, Z, Y,
   
   loglik <- sum(weights[Y0] * loglik0[Y0]) + sum(weights[!Y0] * 
                                                    loglik1[!Y0])
-  
-  
   loglik
 }

@@ -236,34 +236,84 @@ double loglik_ZINB(Rcpp::NumericVector params,
   return loglik ;
 }
 
-// double gradPoisson_cpp(NumericVector params,
-//                        Rcpp::NumericMatrix x,
-//                        Rcpp::NumericMatrix z,
-//                        Rcpp::NumericVector y,
-//                        str link = "probit"){
-//
-//   const MapMat xx = Rcpp::as<MapMat>(x);
-//   const MapVec yy = Rcpp::as<MapVec>(y);
-//   const MapMat zz = Rcpp::as<MapMat>(z);
-//
-//   int kx = x.ncol();
-//
-//   Rcpp::NumericMatrix offsetx(x.nrow());
-//   Rcpp::NumericMatrix offsetz(z.nrow());
-//
-//   Rcpp::NumericVector beta = params[Rcpp::Range(0, kx-1)];
-//   Rcpp::NumericVector gamma = params[Rcpp::Range(kx, params.len())];
-//
-//   Rcpp::NumericVector eta = xx * beta + offsetx ;
-//   Rcpp::NumericVector mu = exp(eta) ;
-//   Rcpp::NumericVector etaz = zz * gamma + offsetz ;
-//
-//   if (link == "probit"){
-//
-//
-//   } else{
-//
-//   }
-//
-//
-// }
+// [[Rcpp::export]]
+Rcpp::NumericVector dmudeta_probit(Rcpp::NumericVector eta){
+  double eps = std::numeric_limits<double>::epsilon();
+  return Rcpp::pmax(
+    Rcpp::dnorm(eta), eps
+  ) ;
+}
+
+
+// [[Rcpp::export]]
+Rcpp::NumericVector grad_ZIP(Rcpp::NumericVector params,
+                  Rcpp::NumericMatrix x,
+                  Rcpp::NumericMatrix z,
+                  Rcpp::NumericVector y,
+                  Rcpp::NumericVector weights,
+                  Rcpp::NumericVector offsetx,
+                  Rcpp::NumericVector offsetz,
+                  Rcpp::String link = "probit"){
+  
+  int n = x.nrow();
+  
+  // Rcpp::NumericVector offsetx(n);
+  // Rcpp::NumericVector offsetz(n);
+  // Rcpp::NumericVector weights(n, 1.0);
+  
+  Rcpp::IntegerVector yy = Rcpp::as<IntegerVector>(y);
+  const MapMat xx = Rcpp::as<MapMat>(x);
+  const MapMat zz = Rcpp::as<MapMat>(z);
+  const MapVec offx = Rcpp::as<MapVec>(offsetx);
+  const MapVec offz = Rcpp::as<MapVec>(offsetz);
+  //const MapVec w = Rcpp::as<MapVec>(weights);
+  
+  int kx = x.ncol();
+  
+  Rcpp::NumericVector beta = params[Rcpp::Range(0, kx-1)];
+  Rcpp::NumericVector gamma = params[Rcpp::Range(kx, params.length())];
+  
+  const MapVec beta2 = Rcpp::as<MapVec>(beta);
+  const MapVec gamma2 = Rcpp::as<MapVec>(gamma);
+  
+  const Eigen::VectorXd mu = xx*beta2 + offx ;
+  const Eigen::VectorXd muz = zz*gamma2 + offz ;
+  
+  Rcpp::NumericVector phi;
+  
+  if (link == "logit"){
+    phi = invlogit(wrap(muz)) ;
+  } else{
+    phi = invprobit(wrap(muz)) ;
+  }
+  
+  Rcpp::NumericVector mu2 = exp(wrap(mu)) ;
+  Rcpp::NumericVector clogdens0 = - mu2 ;
+
+  
+  // Rcpp::NumericVector dens0(n) ;
+  // Rcpp::NumericVector wres_count(n) ;
+  // Rcpp::NumericVector wres_zero(n) ;
+  
+  // for (int i = 0; i < n; i++){
+  //   dens0[i] += muz[i]*(y[i]==0) + exp(log(1-muz[i]) + clogdens0[i]) ;
+  // }
+  
+  // Rcpp::NumericVector dens0 = muz*(y==0) + exp(log(1-muz) + clogdens0) ;
+  // Rcpp::NumericVector wres_count = Rcpp::ifelse(
+  //   y>0, y - mu, -exp(-log(dens0) + 
+  //     log(1 - muz) + clogdens0 + log(mu)
+  //   )
+  // );
+  // Rcpp::NumericVector wres_count = Rcpp::ifelse(
+  //   y>0, -1/(1 - muz) * linkobj$mu.eta(etaz),-exp(-log(dens0) + 
+  //     log(1 - muz) + clogdens0 + log(mu)
+  //   )
+  // )    
+  
+  return clogdens0 ;
+}
+
+
+
+
