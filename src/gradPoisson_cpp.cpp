@@ -254,7 +254,7 @@ Rcpp::NumericVector dmudeta_logit(Rcpp::NumericVector eta){
 }
 
 // [[Rcpp::export]]
-Rcpp::NumericMatrix grad_ZIP(Rcpp::NumericVector params,
+Rcpp::NumericVector grad_ZIP(Rcpp::NumericVector params,
                   Rcpp::NumericMatrix x,
                   Rcpp::NumericMatrix z,
                   Rcpp::NumericVector y,
@@ -322,7 +322,7 @@ Rcpp::NumericMatrix grad_ZIP(Rcpp::NumericVector params,
       wres_zero[i] /= dens0[i]; 
     } else{
       wres_count[i] += y[i]-mu[i];
-      wres_zero[i] += -1/(1 - muz[i]) * dmudeta[i];
+      wres_zero[i] += -1/(1 - muz2[i]) * dmudeta[i];
     }
     term1(i,_) = wres_count[i]*weights[i]*term1(i,_);
     term2(i,_) = wres_zero[i]*weights[i]*term2(i,_) ;
@@ -337,7 +337,7 @@ Rcpp::NumericMatrix grad_ZIP(Rcpp::NumericVector params,
     }
   }  
 
-  return out ;
+  return Rcpp::colSums(out) ;
 }
 
 
