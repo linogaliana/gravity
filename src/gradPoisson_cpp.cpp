@@ -168,6 +168,74 @@ double loglik_ZIP(Rcpp::NumericVector params,
 }
 
 
+//' @export
+// [[Rcpp::export]]
+double loglik_ZINB(Rcpp::NumericVector params,
+                  Rcpp::NumericMatrix x,
+                  Rcpp::NumericMatrix z,
+                  Rcpp::NumericVector y,
+                  Rcpp::NumericVector weights,
+                  Rcpp::NumericVector offsetx,
+                  Rcpp::NumericVector offsetz,
+                  Rcpp::String link = "probit"){
+  
+  int n = x.nrow();
+  
+  // Rcpp::NumericVector offsetx(n);
+  // Rcpp::NumericVector offsetz(n);
+  // Rcpp::NumericVector weights(n, 1.0);
+  
+  Rcpp::IntegerVector yy = Rcpp::as<IntegerVector>(y);
+  const MapMat xx = Rcpp::as<MapMat>(x);
+  const MapMat zz = Rcpp::as<MapMat>(z);
+  const MapVec offx = Rcpp::as<MapVec>(offsetx);
+  const MapVec offz = Rcpp::as<MapVec>(offsetz);
+  //const MapVec w = Rcpp::as<MapVec>(weights);
+  
+  int kx = x.ncol();
+  
+  Rcpp::NumericVector beta = params[Rcpp::Range(0, kx-1)];
+  Rcpp::NumericVector gamma = params[Rcpp::Range(kx, params.length()-1)];
+  double theta = exp(params[params.length()-1]);
+
+  const MapVec beta2 = Rcpp::as<MapVec>(beta);
+  const MapVec gamma2 = Rcpp::as<MapVec>(gamma);
+  
+  const Eigen::VectorXd mu = xx*beta2 + offx ;
+  const Eigen::VectorXd muz = zz*gamma2 + offz ;
+  
+  Rcpp::NumericVector phi;
+  
+  if (link == "logit"){
+    phi = invlogit(wrap(muz)) ;
+  } else{
+    phi = invprobit(wrap(muz)) ;
+  }
+  
+  Rcpp::NumericVector mu2 = exp(wrap(mu)) ;
+
+  // Rcpp::NumericVector loglik0 = log(phi + exp(log(1 - phi) - mu2));
+  Rcpp::NumericVector loglik0(n);
+  Rcpp::NumericVector loglik1(n);
+  
+
+  double loglik;
+  for (int i = 0; i < n; i++){
+    if (y[i]>0){
+      loglik1[i] += log(1 - phi[i]) + R::dnbinom_mu(yy[i], theta, mu2[i], true);
+      loglik += weights[i]*loglik1[i];
+    } else{
+      double mu3 = R::dnbinom_mu(0, theta,
+                                 mu2[i], true) ;
+      loglik0[i] += log(phi[i] + exp(log(1 - phi[i]) + mu3)) ;
+      loglik += weights[i]*loglik0[i];
+    }
+  }
+  
+  
+  return loglik ;
+}
+
 // double gradPoisson_cpp(NumericVector params,
 //                        Rcpp::NumericMatrix x,
 //                        Rcpp::NumericMatrix z,
