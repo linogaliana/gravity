@@ -277,6 +277,7 @@ Rcpp::NumericVector grad_ZIP(Rcpp::NumericVector params,
   //const MapVec w = Rcpp::as<MapVec>(weights);
   
   int kx = x.ncol();
+  int kz = z.ncol();
   
   Rcpp::NumericVector beta = params[Rcpp::Range(0, kx-1)];
   Rcpp::NumericVector gamma = params[Rcpp::Range(kx, params.length())];
@@ -290,38 +291,44 @@ Rcpp::NumericVector grad_ZIP(Rcpp::NumericVector params,
   Rcpp::NumericVector phi;
   Rcpp::NumericVector dmudeta;
   
+  Rcpp::NumericVector muz2 = wrap(muz);
+  
   if (link == "logit"){
-    phi = invlogit(wrap(muz)) ;
+    phi = invlogit(muz2) ;
     dmudeta = dmudeta_logit(phi) ;
   } else{
-    phi = invprobit(wrap(muz)) ;
+    phi = invprobit(muz2) ;
     dmudeta = dmudeta_probit(phi) ;
   }
   
   Rcpp::NumericVector mu2 = exp(wrap(mu)) ;
   Rcpp::NumericVector clogdens0 = - mu2 ;
 
+  Rcpp::NumericVector wres_count(n) ;
+  Rcpp::NumericVector wres_zero(n) ;
   
-  // Rcpp::NumericVector dens0(n) ;
-  // Rcpp::NumericVector wres_count(n) ;
-  // Rcpp::NumericVector wres_zero(n) ;
+  Rcpp::NumericVector dens0 = exp(log(1-muz) + clogdens0) ;
   
-  // for (int i = 0; i < n; i++){
-  //   dens0[i] += muz[i]*(y[i]==0) + exp(log(1-muz[i]) + clogdens0[i]) ;
-  // }
+  Rcpp::NumericMatrix term1 = x ;
+  Rcpp::NumericMatrix term2 = z ;
   
-  // Rcpp::NumericVector dens0 = muz*(y==0) + exp(log(1-muz) + clogdens0) ;
-  // Rcpp::NumericVector wres_count = Rcpp::ifelse(
-  //   y>0, y - mu, -exp(-log(dens0) + 
-  //     log(1 - muz) + clogdens0 + log(mu)
-  //   )
-  // );
-  // Rcpp::NumericVector wres_count = Rcpp::ifelse(
-  //   y>0, -1/(1 - muz) * linkobj$mu.eta(etaz),-exp(-log(dens0) + 
-  //     log(1 - muz) + clogdens0 + log(mu)
-  //   )
-  // )    
+  for (int i = 0; i < n; i++){
+    if (y[i]==0){
+      dens0[i] += muz[i]
+      wres_count[i] += -exp(-log(dens0[i]) + 
+        log(1 - muz[i]) + clogdens0[i] + log(mu[i])
+      );
+      wres_zero[i] -= -(dmudeta[i] - exp(clogdens0[i])*dmudeta[i]);
+      wres_zero[i] /= dens0[i]; 
+    } else{
+      wres_count[i] += y[i]-mu[i];
+      wres_zero[i] += -1/(1 - muz[i]) * dmudeta[i];
+    }
+    term1(i,_) = wres_count[i]*weights[i]*term1(i,_);
+    term2(i,_) = wres_zero[i]*weights[i]*term2(i,_) ;
+  }
   
+
   return clogdens0 ;
 }
 
