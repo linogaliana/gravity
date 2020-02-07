@@ -7,10 +7,27 @@ Z <- cbind(
   X,
   replicate(2, rnorm(200))
 )
-Y <- round(exp(rnorm(200)))
+Y <- rpois(200, lambda = 3)
+
+
+weights = rep(1, nrow(X))
+offsetx = rep(0, nrow(X))
+offsetz = rep(0, nrow(X))
+
 
 
 # ZERO-INFLATED POISSON -----------
+
+a <- grad_ZIP(params, X, Z, Y,
+             weights = weights,
+             offsetx = offsetx,
+             offsetz = offsetz,
+             link = "logit")
+b <-  grad_ZIP_R(params, X, Z, Y,
+                 link = "logit")
+
+max((a-b)[Y>0])
+max((a-b)[Y==0])
 
 testthat::test_that("Gradient for ZIP is correct",{
   testthat::expect_equal(
@@ -18,7 +35,7 @@ testthat::test_that("Gradient for ZIP is correct",{
              weights = rep(1, nrow(X)),
              offsetx = rep(0, nrow(X)),
              offsetz = rep(0, nrow(X)),
-             link = "logit"),
+             link = "logit") - 
     grad_ZIP_R(params, X, Z, Y,
                link = "logit")
   )
@@ -30,7 +47,7 @@ testthat::test_that("[Only positive terms] Gradient for ZIP is correct",{
              weights = rep(1, nrow(X))[Y>0],
              offsetx = rep(0, nrow(X))[Y>0],
              offsetz = rep(0, nrow(X))[Y>0],
-             link = "logit"),
+             link = "logit") - 
     grad_ZIP_R(params, X[Y>0,], Z[Y>0,], Y[Y>0],
                link = "logit")
   )
