@@ -285,58 +285,65 @@ Rcpp::NumericVector grad_ZIP(Rcpp::NumericVector params,
   const MapVec beta2 = Rcpp::as<MapVec>(beta);
   const MapVec gamma2 = Rcpp::as<MapVec>(gamma);
   
-  const Eigen::VectorXd mu = xx*beta2 + offx ;
-  const Eigen::VectorXd muz = zz*gamma2 + offz ;
+  const Eigen::VectorXd eta_eig = xx*beta2 + offx ;
+  const Eigen::VectorXd etaz_eig = zz*gamma2 + offz ;
   
-  Rcpp::NumericVector phi;
+  Rcpp::NumericVector muz;
   Rcpp::NumericVector dmudeta;
-  
-  Rcpp::NumericVector muz2 = wrap(muz);
+
+  // Get back in Rcpp classes  
+  Rcpp::NumericVector etaz = wrap(etaz_eig);
+  Rcpp::NumericVector mu = exp(wrap(eta_eig)) ;
   
   if (link == "logit"){
-    phi = invlogit(muz2) ;
-    dmudeta = dmudeta_logit(phi) ;
+    muz = invlogit(etaz) ;
+    dmudeta = dmudeta_logit(etaz) ;
   } else{
-    phi = invprobit(muz2) ;
-    dmudeta = dmudeta_probit(phi) ;
+    muz = invprobit(etaz) ;
+    dmudeta = dmudeta_probit(etaz) ;
   }
   
-  Rcpp::NumericVector mu2 = exp(wrap(mu)) ;
-  Rcpp::NumericVector clogdens0 = - mu2 ;
+  
+
+  Rcpp::NumericVector clogdens0 = - mu ;
 
   Rcpp::NumericVector wres_count(n) ;
   Rcpp::NumericVector wres_zero(n) ;
   
-  Rcpp::NumericVector dens0 = exp(log(1.0-muz2) + clogdens0) ;
+  Rcpp::NumericVector dens0 = exp(log(1.0-muz) + clogdens0) ;
   
   Rcpp::NumericMatrix term1 = x ;
   Rcpp::NumericMatrix term2 = z ;
   
   for (int i = 0; i < n; i++){
-    if (y[i]==0){
-      dens0[i] += muz2[i];
+    
+    if (y[i]<=0.0){
+      dens0[i] += muz[i];
       wres_count[i] -= exp(-log(dens0[i]) + 
-        log(1 - muz2[i]) + clogdens0[i] + log(mu[i])
+        log(1 - muz[i]) + clogdens0[i] + log(mu[i])
       );
-      wres_zero[i] -= dmudeta[i] - exp(clogdens0[i])*dmudeta[i];
+      wres_zero[i] = dmudeta[i] - exp(clogdens0[i])*dmudeta[i];
       wres_zero[i] /= dens0[i]; 
     } else{
-      wres_count[i] += y[i]-mu[i];
-      wres_zero[i] += -1/(1 - muz2[i]) * dmudeta[i];
+      wres_count[i] += 0.0 + y[i];
+      wres_count[i] -= mu[i];
+      wres_zero[i] -= dmudeta[i]/(1 - muz[i]);
     }
+    
     term1(i,_) = wres_count[i]*weights[i]*term1(i,_);
     term2(i,_) = wres_zero[i]*weights[i]*term2(i,_) ;
   }
-
+  return wres_zero;
+  // cbind
   Rcpp::NumericMatrix out = no_init_matrix(n, kx + kz);
   for (int j = 0; j < kx + kz; j++) {
     if (j < kx) {
-      out(_, j) = x(_, j);
+      out(_, j) = term1(_, j);
     } else {
-      out(_, j) = z(_, j - kx);
+      out(_, j) = term2(_, j - kx);
     }
   }  
-
+  
   return Rcpp::colSums(out) ;
 }
 
