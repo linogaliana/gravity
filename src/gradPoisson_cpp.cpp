@@ -253,99 +253,98 @@ Rcpp::NumericVector dmudeta_logit(Rcpp::NumericVector eta){
   return (opexp-1)/pow(opexp, 2);
 }
 
-// [[Rcpp::export]]
-Rcpp::NumericVector grad_ZIP(Rcpp::NumericVector params,
-                  Rcpp::NumericMatrix x,
-                  Rcpp::NumericMatrix z,
-                  Rcpp::NumericVector y,
-                  Rcpp::NumericVector weights,
-                  Rcpp::NumericVector offsetx,
-                  Rcpp::NumericVector offsetz,
-                  Rcpp::String link = "probit"){
-  
-  int n = x.nrow();
-  
-  // Rcpp::NumericVector offsetx(n);
-  // Rcpp::NumericVector offsetz(n);
-  // Rcpp::NumericVector weights(n, 1.0);
-  
-  Rcpp::IntegerVector yy = Rcpp::as<IntegerVector>(y);
-  const MapMat xx = Rcpp::as<MapMat>(x);
-  const MapMat zz = Rcpp::as<MapMat>(z);
-  const MapVec offx = Rcpp::as<MapVec>(offsetx);
-  const MapVec offz = Rcpp::as<MapVec>(offsetz);
-  //const MapVec w = Rcpp::as<MapVec>(weights);
-  
-  int kx = x.ncol();
-  int kz = z.ncol();
-  
-  Rcpp::NumericVector beta = params[Rcpp::Range(0, kx-1)];
-  Rcpp::NumericVector gamma = params[Rcpp::Range(kx, params.length())];
-  
-  const MapVec beta2 = Rcpp::as<MapVec>(beta);
-  const MapVec gamma2 = Rcpp::as<MapVec>(gamma);
-  
-  const Eigen::VectorXd eta_eig = xx*beta2 + offx ;
-  const Eigen::VectorXd etaz_eig = zz*gamma2 + offz ;
-  
-  Rcpp::NumericVector muz;
-  Rcpp::NumericVector dmudeta;
-
-  // Get back in Rcpp classes  
-  Rcpp::NumericVector etaz = wrap(etaz_eig);
-  Rcpp::NumericVector mu = exp(wrap(eta_eig)) ;
-  
-  if (link == "logit"){
-    muz = invlogit(etaz) ;
-    dmudeta = dmudeta_logit(etaz) ;
-  } else{
-    muz = invprobit(etaz) ;
-    dmudeta = dmudeta_probit(etaz) ;
-  }
-  
-  
-
-  Rcpp::NumericVector clogdens0 = - mu ;
-
-  Rcpp::NumericVector wres_count(n) ;
-  Rcpp::NumericVector wres_zero(n) ;
-  
-  Rcpp::NumericVector dens0 = exp(log(1.0-muz) + clogdens0) ;
-  
-  Rcpp::NumericMatrix term1 = x ;
-  Rcpp::NumericMatrix term2 = z ;
-  
-  for (int i = 0; i < n; i++){
-    
-    if (y[i]<=0.0){
-      dens0[i] += muz[i];
-      wres_count[i] -= exp(-log(dens0[i]) + 
-        log(1 - muz[i]) + clogdens0[i] + log(mu[i])
-      );
-      wres_zero[i] = dmudeta[i] - exp(clogdens0[i])*dmudeta[i];
-      wres_zero[i] /= dens0[i]; 
-    } else{
-      wres_count[i] += 0.0 + y[i];
-      wres_count[i] -= mu[i];
-      wres_zero[i] -= dmudeta[i]/(1 - muz[i]);
-    }
-    
-    term1(i,_) = wres_count[i]*weights[i]*term1(i,_);
-    term2(i,_) = wres_zero[i]*weights[i]*term2(i,_) ;
-  }
-  return wres_zero;
-  // cbind
-  Rcpp::NumericMatrix out = no_init_matrix(n, kx + kz);
-  for (int j = 0; j < kx + kz; j++) {
-    if (j < kx) {
-      out(_, j) = term1(_, j);
-    } else {
-      out(_, j) = term2(_, j - kx);
-    }
-  }  
-  
-  return Rcpp::colSums(out) ;
-}
+// Rcpp::NumericVector grad_ZIP(Rcpp::NumericVector params,
+//                   Rcpp::NumericMatrix x,
+//                   Rcpp::NumericMatrix z,
+//                   Rcpp::NumericVector y,
+//                   Rcpp::NumericVector weights,
+//                   Rcpp::NumericVector offsetx,
+//                   Rcpp::NumericVector offsetz,
+//                   Rcpp::String link = "probit"){
+//   
+//   int n = x.nrow();
+//   
+//   // Rcpp::NumericVector offsetx(n);
+//   // Rcpp::NumericVector offsetz(n);
+//   // Rcpp::NumericVector weights(n, 1.0);
+//   
+//   Rcpp::IntegerVector yy = Rcpp::as<IntegerVector>(y);
+//   const MapMat xx = Rcpp::as<MapMat>(x);
+//   const MapMat zz = Rcpp::as<MapMat>(z);
+//   const MapVec offx = Rcpp::as<MapVec>(offsetx);
+//   const MapVec offz = Rcpp::as<MapVec>(offsetz);
+//   //const MapVec w = Rcpp::as<MapVec>(weights);
+//   
+//   int kx = x.ncol();
+//   int kz = z.ncol();
+//   
+//   Rcpp::NumericVector beta = params[Rcpp::Range(0, kx-1)];
+//   Rcpp::NumericVector gamma = params[Rcpp::Range(kx, params.length())];
+//   
+//   const MapVec beta2 = Rcpp::as<MapVec>(beta);
+//   const MapVec gamma2 = Rcpp::as<MapVec>(gamma);
+//   
+//   const Eigen::VectorXd eta_eig = xx*beta2 + offx ;
+//   const Eigen::VectorXd etaz_eig = zz*gamma2 + offz ;
+//   
+//   Rcpp::NumericVector muz;
+//   Rcpp::NumericVector dmudeta;
+// 
+//   // Get back in Rcpp classes  
+//   Rcpp::NumericVector etaz = wrap(etaz_eig);
+//   Rcpp::NumericVector mu = exp(wrap(eta_eig)) ;
+//   
+//   if (link == "logit"){
+//     muz = invlogit(etaz) ;
+//     dmudeta = dmudeta_logit(etaz) ;
+//   } else{
+//     muz = invprobit(etaz) ;
+//     dmudeta = dmudeta_probit(etaz) ;
+//   }
+//   
+//   
+// 
+//   Rcpp::NumericVector clogdens0 = - mu ;
+// 
+//   Rcpp::NumericVector wres_count(n) ;
+//   Rcpp::NumericVector wres_zero(n) ;
+//   
+//   Rcpp::NumericVector dens0 = exp(log(1.0-muz) + clogdens0) ;
+//   
+//   Rcpp::NumericMatrix term1 = x ;
+//   Rcpp::NumericMatrix term2 = z ;
+//   
+//   for (int i = 0; i < n; i++){
+//     
+//     if (y[i]<=0.0){
+//       dens0[i] += muz[i];
+//       wres_count[i] -= exp(-log(dens0[i]) + 
+//         log(1 - muz[i]) + clogdens0[i] + log(mu[i])
+//       );
+//       wres_zero[i] = dmudeta[i] - exp(clogdens0[i])*dmudeta[i];
+//       wres_zero[i] /= dens0[i]; 
+//     } else{
+//       wres_count[i] += 0.0 + y[i];
+//       wres_count[i] -= mu[i];
+//       wres_zero[i] -= dmudeta[i]/(1 - muz[i]);
+//     }
+//     
+//     term1(i,_) = wres_count[i]*weights[i]*term1(i,_);
+//     term2(i,_) = wres_zero[i]*weights[i]*term2(i,_) ;
+//   }
+//   return wres_zero;
+//   // cbind
+//   Rcpp::NumericMatrix out = no_init_matrix(n, kx + kz);
+//   for (int j = 0; j < kx + kz; j++) {
+//     if (j < kx) {
+//       out(_, j) = term1(_, j);
+//     } else {
+//       out(_, j) = term2(_, j - kx);
+//     }
+//   }  
+//   
+//   return Rcpp::colSums(out) ;
+// }
 
 
 

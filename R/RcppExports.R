@@ -58,6 +58,24 @@ invprobit <- function(x) {
     .Call('_gravity_invprobit', PACKAGE = 'gravity', x)
 }
 
+#' @export
+loglik_ZIP <- function(params, x, z, y, weights, offsetx, offsetz, link = "probit") {
+    .Call('_gravity_loglik_ZIP', PACKAGE = 'gravity', params, x, z, y, weights, offsetx, offsetz, link)
+}
+
+#' @export
+loglik_ZINB <- function(params, x, z, y, weights, offsetx, offsetz, link = "probit") {
+    .Call('_gravity_loglik_ZINB', PACKAGE = 'gravity', params, x, z, y, weights, offsetx, offsetz, link)
+}
+
+dmudeta_probit <- function(eta) {
+    .Call('_gravity_dmudeta_probit', PACKAGE = 'gravity', eta)
+}
+
+dmudeta_logit <- function(eta) {
+    .Call('_gravity_dmudeta_logit', PACKAGE = 'gravity', eta)
+}
+
 #' Score for negative binomial maximum-likelihood estimates
 #' 
 #' @param n Number of observations

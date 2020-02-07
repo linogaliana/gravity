@@ -33,7 +33,7 @@ fastzeroinfl2 <- function(formula, data, subset, na.action, weights, offset,
   #   loglik
   # }
   ziGeom <- function(parms) ziNegBin(c(parms, 0))
-  gradPoisson <- function(parms) {
+  gradPoisson <- function(parms,x, z, y, weights, offsetx, offsetz, link = "probit") {
     eta <- as.vector(X %*% parms[1:kx] + offsetx)
     mu <- exp(eta)
     etaz <- as.vector(Z %*% parms[(kx + 1):(kx + kz)] + 
@@ -66,7 +66,7 @@ fastzeroinfl2 <- function(formula, data, subset, na.action, weights, offset,
     colSums(cbind(wres_count * weights * X, wres_zero * 
                     weights * Z))
   }
-  gradNegBin <- function(parms) {
+  gradNegBin <- function(parms,x, z, y, weights, offsetx, offsetz, link = "probit") {
     eta <- as.vector(X %*% parms[1:kx] + offsetx)
     mu <- exp(eta)
     etaz <- as.vector(Z %*% parms[(kx + 1):(kx + kz)] + 

@@ -2,10 +2,16 @@ context("fastzeroinfl is consistent with existing pscl::fastzeroinfl function")
 
 
 fit_pscl  <- pscl::zeroinfl(Days ~ Sex + Age + Eth*Lrn, data = MASS::quine)
-fit_speed  <- gravity::fastzeroinfl(Days ~ Sex + Age + Eth*Lrn, data = MASS::quine)
+fit_speed  <- gravity:::fastzeroinfl(Days ~ Sex + Age + Eth*Lrn, data = MASS::quine)
+fit_speedb  <- gravity:::fastzeroinfl2(Days ~ Sex + Age + Eth*Lrn, data = MASS::quine)
 
-fit_speed2  <- gravity::fastzeroinfl(Days ~ Sex + Age, data = MASS::quine,
+
+fit_pscl2  <- pscl::zeroinfl(Days ~ Sex + Age, data = MASS::quine,
+                             dist = "negbin")
+fit_speed2  <- gravity:::fastzeroinfl(Days ~ Sex + Age, data = MASS::quine,
                                       dist = "negbin")
+fit_speed3  <- gravity:::fastzeroinfl2(Days ~ Sex + Age, data = MASS::quine,
+                                     dist = "negbin")
 
 
 # coefficients ==============-
