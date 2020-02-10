@@ -44,3 +44,39 @@ testthat::test_that("Gradient for ZIP is correct",{
                link = "probit")
   )
 })
+
+
+testthat::test_that("Gradient for ZINB is correct",{
+  testthat::expect_equal(
+    grad_ZINB_R(c(params,2), X, Z, Y,
+                weights = rep(1, nrow(X)),
+                offsetx = rep(0, nrow(X)),
+                offsetz = rep(0, nrow(X)),
+                link = "probit"),
+    grad_ZINB(c(params,2), X, Z, Y,
+                weights = rep(1, nrow(X)),
+                offsetx = rep(0, nrow(X)),
+                offsetz = rep(0, nrow(X)),
+                link = "probit"),
+    check.names = FALSE
+  )
+})
+
+
+
+testthat::test_that("Gradient for ZINB is correct",{
+  testthat::expect_equal(
+    grad_ZINB_R(c(params,2), X, Z, Y,
+                weights = rep(1, nrow(X)),
+                offsetx = rep(0, nrow(X)),
+                offsetz = rep(0, nrow(X)),
+                link = "logit"),
+    grad_ZINB(c(params,2), X, Z, Y,
+              weights = rep(1, nrow(X)),
+              offsetx = rep(0, nrow(X)),
+              offsetz = rep(0, nrow(X)),
+              link = "logit"),
+    check.names = FALSE
+  )
+})
+
