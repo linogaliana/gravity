@@ -8,7 +8,7 @@ loglik_ZIP_R <- function(params, X, Z, Y,
   
   if (missing(weights)) weights <- rep(1,nrow(X))
   if (missing(offsetx)) offsetx <- rep(0,nrow(X))
-  if (missing(offsetz)) offsetz <- rep(1,nrow(Z))
+  if (missing(offsetz)) offsetz <- rep(0,nrow(Z))
   
   
   kx <- ncol(X)
@@ -39,7 +39,7 @@ loglik_ZINB_R <- function(params, X, Z, Y,
   
   if (missing(weights)) weights <- rep(1,nrow(X))
   if (missing(offsetx)) offsetx <- rep(0,nrow(X))
-  if (missing(offsetz)) offsetz <- rep(1,nrow(Z))
+  if (missing(offsetz)) offsetz <- rep(0,nrow(Z))
   
   link <- match.arg(link)
   
