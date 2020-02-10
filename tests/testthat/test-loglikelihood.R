@@ -152,79 +152,81 @@ testthat::test_that(
 # WITH OPTIM --------------------
 
 
-# optim(
-#   par = c(params,1),
-#   fn = loglik_ZINB,
-#   x = X,
-#   z = Z,
-#   y = Y,
-#   weights = rep(1, nrow(X)),
-#   offsetx = rep(0, nrow(X)),
-#   offsetz = rep(0, nrow(Z)),
-#   link = "logit"
-# )
-# 
-# optim(
-#   par = c(params,1),
-#   fn = loglik_ZINB_R,
-#   X = X,
-#   Z = Z,
-#   Y = Y,
-#   weights = rep(1, nrow(X)),
-#   offsetx = rep(0, nrow(X)),
-#   offsetz = rep(0, nrow(Z)),
-#   link = "logit"
-# )
-# 
-# 
-# optim(
-#   par = c(params,1),
-#   fn = loglik_ZINB,
-#   x = X,
-#   z = Z,
-#   y = Y,
-#   weights = rep(1, nrow(X)),
-#   offsetx = rep(0, nrow(X)),
-#   offsetz = rep(0, nrow(Z)),
-#   link = "probit"
-# )
-# 
-# optim(
-#   par = c(params,1),
-#   fn = loglik_ZINB_R,
-#   X = X,
-#   Z = Z,
-#   Y = Y,
-#   weights = rep(1, nrow(X)),
-#   offsetx = rep(0, nrow(X)),
-#   offsetz = rep(0, nrow(Z)),
-#   link = "probit"
-# )
-# 
-# 
-# optim(
-#   par = c(params),
-#   fn = loglik_ZIP,
-#   x = X,
-#   z = Z,
-#   y = Y,
-#   weights = rep(1, nrow(X)),
-#   offsetx = rep(0, nrow(X)),
-#   offsetz = rep(0, nrow(Z)),
-#   link = "probit"
-# )
-# 
-# optim(
-#   par = c(params),
-#   fn = loglik_ZIP_R,
-#   X = X,
-#   Z = Z,
-#   Y = Y,
-#   weights = rep(1, nrow(X)),
-#   offsetx = rep(0, nrow(X)),
-#   offsetz = rep(0, nrow(Z)),
-#   link = "probit"
-# )
+## ZERO INFLATED NEGBIN MODEL
+
+optim(
+  par = c(params,1),
+  fn = loglik_ZINB,
+  x = X,
+  z = Z,
+  y = Y,
+  weights = rep(1, nrow(X)),
+  offsetx = rep(0, nrow(X)),
+  offsetz = rep(0, nrow(Z)),
+  link = "logit"
+)
+
+optim(
+  par = c(params,1),
+  fn = loglik_ZINB_R,
+  X = X,
+  Z = Z,
+  Y = Y,
+  weights = rep(1, nrow(X)),
+  offsetx = rep(0, nrow(X)),
+  offsetz = rep(0, nrow(Z)),
+  link = "logit"
+)
+
+
+optim(
+  par = c(params,1),
+  fn = loglik_ZINB,
+  x = X,
+  z = Z,
+  y = Y,
+  weights = rep(1, nrow(X)),
+  offsetx = rep(0, nrow(X)),
+  offsetz = rep(0, nrow(Z)),
+  link = "logit"
+)
+
+optim(
+  par = c(params,1),
+  fn = loglik_ZINB_R,
+  X = X,
+  Z = Z,
+  Y = Y,
+  weights = rep(1, nrow(X)),
+  offsetx = rep(0, nrow(X)),
+  offsetz = rep(0, nrow(Z)),
+  link = "logit"
+)
+
+
+optim(
+  par = c(params),
+  fn = loglik_ZIP,
+  x = X,
+  z = Z,
+  y = Y,
+  weights = rep(1, nrow(X)),
+  offsetx = rep(0, nrow(X)),
+  offsetz = rep(0, nrow(Z)),
+  link = "probit"
+)
+
+optim(
+  par = c(params),
+  fn = loglik_ZIP_R,
+  X = X,
+  Z = Z,
+  Y = Y,
+  weights = rep(1, nrow(X)),
+  offsetx = rep(0, nrow(X)),
+  offsetz = rep(0, nrow(Z)),
+  link = "probit"
+)
 
 
 
