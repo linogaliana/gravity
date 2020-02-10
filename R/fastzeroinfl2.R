@@ -33,22 +33,22 @@ fastzeroinfl2 <- function(formula, data, subset, na.action, weights, offset,
   #   loglik
   # }
   ziGeom <- function(parms) ziNegBin(c(parms, 0))
-  gradPoisson <- function(parms,x, z, y, weights, offsetx, offsetz, link = "probit") {
-    eta <- as.vector(X %*% parms[1:kx] + offsetx)
-    mu <- exp(eta)
-    etaz <- as.vector(Z %*% parms[(kx + 1):(kx + kz)] + 
-                        offsetz)
-    muz <- linkinv(etaz)
-    clogdens0 <- -mu
-    dens0 <- muz * (1 - as.numeric(Y1)) + exp(log(1 - muz) + 
-                                                clogdens0)
-    wres_count <- ifelse(Y1, Y - mu, -exp(-log(dens0) + 
-                                            log(1 - muz) + clogdens0 + log(mu)))
-    wres_zero <- ifelse(Y1, -1/(1 - muz) * linkobj$mu.eta(etaz), 
-                        (linkobj$mu.eta(etaz) - exp(clogdens0) * linkobj$mu.eta(etaz))/dens0)
-    colSums(cbind(wres_count * weights * X, wres_zero * 
-                    weights * Z))
-  }
+  # gradPoisson <- function(parms,x, z, y, weights, offsetx, offsetz, link = "probit") {
+  #   eta <- as.vector(X %*% parms[1:kx] + offsetx)
+  #   mu <- exp(eta)
+  #   etaz <- as.vector(Z %*% parms[(kx + 1):(kx + kz)] + 
+  #                       offsetz)
+  #   muz <- linkinv(etaz)
+  #   clogdens0 <- -mu
+  #   dens0 <- muz * (1 - as.numeric(Y1)) + exp(log(1 - muz) + 
+  #                                               clogdens0)
+  #   wres_count <- ifelse(Y1, Y - mu, -exp(-log(dens0) + 
+  #                                           log(1 - muz) + clogdens0 + log(mu)))
+  #   wres_zero <- ifelse(Y1, -1/(1 - muz) * linkobj$mu.eta(etaz), 
+  #                       (linkobj$mu.eta(etaz) - exp(clogdens0) * linkobj$mu.eta(etaz))/dens0)
+  #   colSums(cbind(wres_count * weights * X, wres_zero * 
+  #                   weights * Z))
+  # }
   gradGeom <- function(parms) {
     eta <- as.vector(X %*% parms[1:kx] + offsetx)
     mu <- exp(eta)
@@ -66,34 +66,34 @@ fastzeroinfl2 <- function(formula, data, subset, na.action, weights, offset,
     colSums(cbind(wres_count * weights * X, wres_zero * 
                     weights * Z))
   }
-  gradNegBin <- function(parms,x, z, y, weights, offsetx, offsetz, link = "probit") {
-    eta <- as.vector(X %*% parms[1:kx] + offsetx)
-    mu <- exp(eta)
-    etaz <- as.vector(Z %*% parms[(kx + 1):(kx + kz)] + 
-                        offsetz)
-    muz <- linkinv(etaz)
-    theta <- exp(parms[(kx + kz) + 1])
-    clogdens0 <- dnbinom(0, size = theta, mu = mu, log = TRUE)
-    dens0 <- muz * (1 - as.numeric(Y1)) + exp(log(1 - muz) + 
-                                                clogdens0)
-    wres_count <- ifelse(Y1, Y - mu * (Y + theta)/(mu + 
-                                                     theta), -exp(-log(dens0) + log(1 - muz) + clogdens0 + 
-                                                                    log(theta) - log(mu + theta) + log(mu)))
-    wres_zero <- ifelse(Y1, -1/(1 - muz) * linkobj$mu.eta(etaz), 
-                        (linkobj$mu.eta(etaz) - exp(clogdens0) * linkobj$mu.eta(etaz))/dens0)
-    wres_theta <- theta * ifelse(Y1, digamma(Y + theta) - 
-                                   digamma(theta) + log(theta) - log(mu + theta) + 
-                                   1 - (Y + theta)/(mu + theta), exp(-log(dens0) + 
-                                                                       log(1 - muz) + clogdens0) * (log(theta) - log(mu + 
-                                                                                                                       theta) + 1 - theta/(mu + theta)))
-    colSums(cbind(wres_count * weights * X, wres_zero * 
-                    weights * Z, wres_theta))
-  }
+  # gradNegBin <- function(parms,x, z, y, weights, offsetx, offsetz, link = "probit") {
+  #   eta <- as.vector(X %*% parms[1:kx] + offsetx)
+  #   mu <- exp(eta)
+  #   etaz <- as.vector(Z %*% parms[(kx + 1):(kx + kz)] + 
+  #                       offsetz)
+  #   muz <- linkinv(etaz)
+  #   theta <- exp(parms[(kx + kz) + 1])
+  #   clogdens0 <- dnbinom(0, size = theta, mu = mu, log = TRUE)
+  #   dens0 <- muz * (1 - as.numeric(Y1)) + exp(log(1 - muz) + 
+  #                                               clogdens0)
+  #   wres_count <- ifelse(Y1, Y - mu * (Y + theta)/(mu + 
+  #                                                    theta), -exp(-log(dens0) + log(1 - muz) + clogdens0 + 
+  #                                                                   log(theta) - log(mu + theta) + log(mu)))
+  #   wres_zero <- ifelse(Y1, -1/(1 - muz) * linkobj$mu.eta(etaz), 
+  #                       (linkobj$mu.eta(etaz) - exp(clogdens0) * linkobj$mu.eta(etaz))/dens0)
+  #   wres_theta <- theta * ifelse(Y1, digamma(Y + theta) - 
+  #                                  digamma(theta) + log(theta) - log(mu + theta) + 
+  #                                  1 - (Y + theta)/(mu + theta), exp(-log(dens0) + 
+  #                                                                      log(1 - muz) + clogdens0) * (log(theta) - log(mu + 
+  #                                                                                                                      theta) + 1 - theta/(mu + theta)))
+  #   colSums(cbind(wres_count * weights * X, wres_zero * 
+  #                   weights * Z, wres_theta))
+  # }
   dist <- match.arg(dist)
   loglikfun <- switch(dist, poisson = loglik_ZIP, geometric = ziGeom, 
                       negbin = loglik_ZINB)
   gradfun <- switch(dist, poisson = grad_ZIP, geometric = gradGeom, 
-                    negbin = gradNegBin)
+                    negbin = grad_ZINB)
   linkstr <- match.arg(link)
   linkobj <- make.link(linkstr)
   linkinv <- linkobj$linkinv
