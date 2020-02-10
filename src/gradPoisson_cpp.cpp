@@ -443,22 +443,21 @@ Rcpp::NumericVector grad_ZINB(Rcpp::NumericVector params,
     term1(i,_) = wres_count[i]*weights[i]*x(i,_);
     term2(i,_) = wres_zero[i]*weights[i]*z(i,_) ;    
     
-    
-    // cbind
-    Rcpp::NumericMatrix out = no_init_matrix(n, kx + kz + 1);
-    
-    for (int j = 0; j < kx + kz; j++) {
-      if (j < kx) {
-        out(_, j) = term1(_, j);
-      } else if (j < kx + kz){
-        out(_, j) = term2(_, j - kx);
-      } else{
-        out(_, j) = wres_theta ;
-      }
-    }
-    
-    
   }
+  
+  // cbind
+  Rcpp::NumericMatrix out = no_init_matrix(n, kx + kz + 1);
+  
+  for (int j = 0; j < kx + kz + 1; j++) {
+    if (j < kx) {
+      out(_, j) = term1(_, j);
+    } else if (j < kx + kz){
+      out(_, j) = term2(_, j - kx);
+    } else{
+      out(_, j) = wres_theta ;
+    }
+  }
+  
   
   return Rcpp::colSums(out) ;
 
