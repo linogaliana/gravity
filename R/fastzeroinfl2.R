@@ -92,7 +92,7 @@ fastzeroinfl2 <- function(formula, data, subset, na.action, weights, offset,
   dist <- match.arg(dist)
   loglikfun <- switch(dist, poisson = loglik_ZIP, geometric = ziGeom, 
                       negbin = loglik_ZINB)
-  gradfun <- switch(dist, poisson = gradPoisson, geometric = gradGeom, 
+  gradfun <- switch(dist, poisson = grad_ZIP, geometric = gradGeom, 
                     negbin = gradNegBin)
   linkstr <- match.arg(link)
   linkobj <- make.link(linkstr)
