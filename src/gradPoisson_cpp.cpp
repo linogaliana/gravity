@@ -352,4 +352,117 @@ Rcpp::NumericVector grad_ZIP(Rcpp::NumericVector params,
 
 
 
+// [[Rcpp::export]]
+Rcpp::NumericVector grad_ZINB(Rcpp::NumericVector params,
+                             Rcpp::NumericMatrix x,
+                             Rcpp::NumericMatrix z,
+                             Rcpp::NumericVector y,
+                             Rcpp::NumericVector weights,
+                             Rcpp::NumericVector offsetx,
+                             Rcpp::NumericVector offsetz,
+                             Rcpp::String link = "probit"){
+  
+  int n = x.nrow();
+  
+  // Rcpp::NumericVector offsetx(n);
+  // Rcpp::NumericVector offsetz(n);
+  // Rcpp::NumericVector weights(n, 1.0);
+  
+  Rcpp::IntegerVector yy = Rcpp::as<IntegerVector>(y);
+  const MapMat xx = Rcpp::as<MapMat>(x);
+  const MapMat zz = Rcpp::as<MapMat>(z);
+  const MapVec offx = Rcpp::as<MapVec>(offsetx);
+  const MapVec offz = Rcpp::as<MapVec>(offsetz);
+  //const MapVec w = Rcpp::as<MapVec>(weights);
+  
+  int kx = x.ncol();
+  int kz = z.ncol();
+  
+  Rcpp::NumericVector beta = params[Rcpp::Range(0, kx-1)];
+  Rcpp::NumericVector gamma = params[Rcpp::Range(kx, params.length())];
+  double theta = exp(params[params.length()-1]);
+  
+  const MapVec beta2 = Rcpp::as<MapVec>(beta);
+  const MapVec gamma2 = Rcpp::as<MapVec>(gamma);
+  
+  const Eigen::VectorXd eta_eig = xx*beta2 + offx ;
+  const Eigen::VectorXd etaz_eig = zz*gamma2 + offz ;
+  
+  Rcpp::NumericVector muz;
+  Rcpp::NumericVector dmudeta;
+  
+  // Get back in Rcpp classes
+  Rcpp::NumericVector etaz = wrap(etaz_eig);
+  Rcpp::NumericVector mu = exp(wrap(eta_eig)) ;
+  
+  if (link == "logit"){
+    muz = invlogit(etaz) ;
+    dmudeta = dmudeta_logit(etaz) ;
+  } else{
+    muz = invprobit(etaz) ;
+    dmudeta = dmudeta_probit(etaz) ;
+  }
+  
+  Rcpp::NumericVector clogdens0(n);
+  Rcpp::NumericVector dens0 = 1-muz;
+  Rcpp::NumericVector wres_count(n) ;
+  Rcpp::NumericVector wres_zero(n) ;
+  Rcpp::NumericVector wres_theta(n) ;
+  Rcpp::NumericMatrix term1(n, kx) ;
+  Rcpp::NumericMatrix term2(n, kz) ;
+  
+  
+  for (int i = 0; i < n; i++){
+    
+    clogdens0[i] = R::dnbinom_mu(0, theta, mu[i], true);
+    dens0[i] *= exp(clogdens0[i]);
+    
+    if (y[i]> 0.0){
+      
+      wres_count[i] += y[i]-mu[i]*(y[i]+theta)/(mu[i]+theta) ;
+      wres_zero[i] -= dmudeta[i]/(1 - muz[i]) ; 
+      wres_theta[i] += R::digamma(y[i] + theta) - R::digamma(theta) +
+        log(theta) - log(mu[i] + theta) + 1.0 - (y[i] + theta)/(mu[i] + theta);
+      
+    } else{
+      
+      dens0[i] += muz[i];
+      wres_count[i] -= exp(-log(dens0[i]) +
+        log(1 - muz[i]) + clogdens0[i] + 
+        log(theta) - log(mu[i] + theta) + log(mu[i])
+                             );
+      wres_zero[i] += (dmudeta[i] - exp(clogdens0[i])*dmudeta[i])/dens0[i] ; 
+      
+      wres_theta[i] += exp(-log(dens0[i]) + log(1-muz[i]) + clogdens0[i]);
+      wres_theta[i] *= log(theta) - log(mu[i] + theta) + 1.0 - theta/(mu[i] + theta) ; 
+
+    }
+    
+    wres_theta[i] *= theta;
+    
+    term1(i,_) = wres_count[i]*weights[i]*x(i,_);
+    term2(i,_) = wres_zero[i]*weights[i]*z(i,_) ;    
+    
+    
+    // cbind
+    Rcpp::NumericMatrix out = no_init_matrix(n, kx + kz + 1);
+    
+    for (int j = 0; j < kx + kz; j++) {
+      if (j < kx) {
+        out(_, j) = term1(_, j);
+      } else if (j < kx + kz){
+        out(_, j) = term2(_, j - kx);
+      } else{
+        out(_, j) = wres_theta ;
+      }
+    }
+    
+    
+  }
+  
+  return Rcpp::colSums(out) ;
+
+}
+
+
 
