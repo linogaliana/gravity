@@ -38,6 +38,5 @@ grad_ZIP_R <- function(params, X, Z, Y,
                       (linkobj$mu.eta(etaz) - exp(clogdens0) * linkobj$mu.eta(etaz))/dens0)
   colSums(cbind(wres_count * weights * X, wres_zero * 
                   weights * Z))
-  return(wres_zero)
 }
 
