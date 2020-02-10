@@ -80,3 +80,36 @@ testthat::test_that("Gradient for ZINB is correct",{
   )
 })
 
+
+
+
+# speed
+
+microbenchmark::microbenchmark(
+  grad_ZINB(c(params,2), X, Z, Y,
+            weights = rep(1, nrow(X)),
+            offsetx = rep(0, nrow(X)),
+            offsetz = rep(0, nrow(X)),
+            link = "logit"),
+  grad_ZINB_R(c(params,2), X, Z, Y,
+              weights = rep(1, nrow(X)),
+              offsetx = rep(0, nrow(X)),
+              offsetz = rep(0, nrow(X)),
+              link = "logit"),
+  times=50L
+)
+
+
+microbenchmark::microbenchmark(
+  grad_ZINB(c(params,2), X, Z, Y,
+            weights = rep(1, nrow(X)),
+            offsetx = rep(0, nrow(X)),
+            offsetz = rep(0, nrow(X)),
+            link = "probit"),
+  grad_ZINB_R(c(params,2), X, Z, Y,
+              weights = rep(1, nrow(X)),
+              offsetx = rep(0, nrow(X)),
+              offsetz = rep(0, nrow(X)),
+              link = "probit"),
+  times=50L
+)
