@@ -108,6 +108,42 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// grad_ZIP
+Rcpp::NumericVector grad_ZIP(Rcpp::NumericVector params, Rcpp::NumericMatrix x, Rcpp::NumericMatrix z, Rcpp::NumericVector y, Rcpp::NumericVector weights, Rcpp::NumericVector offsetx, Rcpp::NumericVector offsetz, Rcpp::String link);
+RcppExport SEXP _gravity_grad_ZIP(SEXP paramsSEXP, SEXP xSEXP, SEXP zSEXP, SEXP ySEXP, SEXP weightsSEXP, SEXP offsetxSEXP, SEXP offsetzSEXP, SEXP linkSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type z(zSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type weights(weightsSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type offsetx(offsetxSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type offsetz(offsetzSEXP);
+    Rcpp::traits::input_parameter< Rcpp::String >::type link(linkSEXP);
+    rcpp_result_gen = Rcpp::wrap(grad_ZIP(params, x, z, y, weights, offsetx, offsetz, link));
+    return rcpp_result_gen;
+END_RCPP
+}
+// grad_ZINB
+Rcpp::NumericVector grad_ZINB(Rcpp::NumericVector params, Rcpp::NumericMatrix x, Rcpp::NumericMatrix z, Rcpp::NumericVector y, Rcpp::NumericVector weights, Rcpp::NumericVector offsetx, Rcpp::NumericVector offsetz, Rcpp::String link);
+RcppExport SEXP _gravity_grad_ZINB(SEXP paramsSEXP, SEXP xSEXP, SEXP zSEXP, SEXP ySEXP, SEXP weightsSEXP, SEXP offsetxSEXP, SEXP offsetzSEXP, SEXP linkSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type z(zSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type weights(weightsSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type offsetx(offsetxSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type offsetz(offsetzSEXP);
+    Rcpp::traits::input_parameter< Rcpp::String >::type link(linkSEXP);
+    rcpp_result_gen = Rcpp::wrap(grad_ZINB(params, x, z, y, weights, offsetx, offsetz, link));
+    return rcpp_result_gen;
+END_RCPP
+}
 // score
 double score(int n, double th, NumericVector mu, NumericVector y);
 RcppExport SEXP _gravity_score(SEXP nSEXP, SEXP thSEXP, SEXP muSEXP, SEXP ySEXP) {
@@ -161,6 +197,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_gravity_loglik_ZINB", (DL_FUNC) &_gravity_loglik_ZINB, 8},
     {"_gravity_dmudeta_probit", (DL_FUNC) &_gravity_dmudeta_probit, 1},
     {"_gravity_dmudeta_logit", (DL_FUNC) &_gravity_dmudeta_logit, 1},
+    {"_gravity_grad_ZIP", (DL_FUNC) &_gravity_grad_ZIP, 8},
+    {"_gravity_grad_ZINB", (DL_FUNC) &_gravity_grad_ZINB, 8},
     {"_gravity_score", (DL_FUNC) &_gravity_score, 4},
     {"_gravity_info", (DL_FUNC) &_gravity_info, 4},
     {"_gravity_speed_theta_ml", (DL_FUNC) &_gravity_speed_theta_ml, 5},

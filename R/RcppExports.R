@@ -76,6 +76,14 @@ dmudeta_logit <- function(eta) {
     .Call('_gravity_dmudeta_logit', PACKAGE = 'gravity', eta)
 }
 
+grad_ZIP <- function(params, x, z, y, weights, offsetx, offsetz, link = "probit") {
+    .Call('_gravity_grad_ZIP', PACKAGE = 'gravity', params, x, z, y, weights, offsetx, offsetz, link)
+}
+
+grad_ZINB <- function(params, x, z, y, weights, offsetx, offsetz, link = "probit") {
+    .Call('_gravity_grad_ZINB', PACKAGE = 'gravity', params, x, z, y, weights, offsetx, offsetz, link)
+}
+
 #' Score for negative binomial maximum-likelihood estimates
 #' 
 #' @param n Number of observations
