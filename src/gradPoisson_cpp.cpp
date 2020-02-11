@@ -497,8 +497,7 @@ public:
   }
 };
 
-Rcpp::List fastZI_(Rcpp::NumericVector params,
-               Rcpp::NumericMatrix x,
+Rcpp::List fastZI_(Rcpp::NumericMatrix x,
                Rcpp::NumericMatrix z,
                Rcpp::NumericVector y,
                Rcpp::NumericVector weights,
