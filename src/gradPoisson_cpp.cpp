@@ -464,4 +464,73 @@ Rcpp::NumericVector grad_ZINB(Rcpp::NumericVector params,
 }
 
 
+class ZIP: public MFuncGrad
+{
+private:
+  const MapMat X;
+  const MapMat Z;
+  const MapVec Y;
+  const MapVec w;
+  const MapVec ox;
+  const MapVec oz;
+public:
+  ZIP(const MapMat x_,
+      const MapMat z_, 
+      const MapVec y_,
+      const MapVec weights_,
+      const MapVec offsetx_,
+      const MapVec offsetz_) : X(x_), Z(z_), 
+      Y(y_), w(weights_), ox(offsetx_), oz(offsetz_){}
+  
+  double f_grad(Constvec& theta, Refvec grad){
+    
+  Rcpp::NumericVector gradient = grad_ZIP(wrap(theta), wrap(X), wrap(Z), wrap(Y),
+                        wrap(w),
+                        wrap(ox),
+                        wrap(oz)) ;
+    
+  const double f = sum(gradient);
+  grad.noalias() = Rcpp::as<MapVec>(gradient);
+  
+  return f ;
 
+  }
+};
+
+Rcpp::List fastZI_(Rcpp::NumericVector params,
+               Rcpp::NumericMatrix x,
+               Rcpp::NumericMatrix z,
+               Rcpp::NumericVector y,
+               Rcpp::NumericVector weights,
+               Rcpp::NumericVector offsetx,
+               Rcpp::NumericVector offsetz,
+               Rcpp::NumericVector start,
+               double eps_f, double eps_g, int maxit){
+  
+  const MapMat xx   = Rcpp::as<MapMat>(x) ;
+  const MapMat zz   = Rcpp::as<MapMat>(z) ;
+  const MapVec yy   = Rcpp::as<MapVec>(y) ;
+  const MapVec ww   = Rcpp::as<MapVec>(weights) ;
+  const MapVec oox  = Rcpp::as<MapVec>(offsetx) ;
+  const MapVec ooz  = Rcpp::as<MapVec>(offsetz) ;
+  
+  ZIP zeroinfl(xx, zz, yy,
+          ww, oox,
+          ooz);
+  
+  // Initial guess
+  Rcpp::NumericVector b = Rcpp::clone(start);
+  MapVec beta(b.begin(), b.length());
+  
+  double fopt;
+  int status = optim_lbfgs(zeroinfl, beta, fopt, maxit, eps_f, eps_g);
+  
+  if(status < 0)
+    Rcpp::warning("algorithm did not converge");
+  
+  return Rcpp::List::create(
+    Rcpp::Named("coefficients") = b,
+    Rcpp::Named("loglikelihood") = -fopt,
+    Rcpp::Named("converged")  = (status >= 0)    
+  ) ;
+}
