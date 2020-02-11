@@ -497,6 +497,7 @@ public:
   }
 };
 
+// [[Rcpp::export]]
 Rcpp::List fastZI_(Rcpp::NumericMatrix x,
                Rcpp::NumericMatrix z,
                Rcpp::NumericVector y,
