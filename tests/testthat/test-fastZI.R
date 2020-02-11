@@ -12,4 +12,10 @@ weights = rep(1, nrow(X))
 offsetx = rep(0, nrow(X))
 offsetz = rep(0, nrow(X))
 
+
+fit_pscl  <- pscl::zeroinfl(Days ~ Sex + Age + Eth*Lrn, data = MASS::quine)
+fit_speed  <- gravity:::fastzeroinfl(Days ~ Sex + Age + Eth*Lrn, data = MASS::quine)
+fit_speedb  <- gravity:::fastzeroinfl2(Days ~ Sex + Age + Eth*Lrn, data = MASS::quine)
+
+
 fastZI(X, Z, Y)

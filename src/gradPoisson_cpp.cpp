@@ -473,13 +473,15 @@ private:
   const MapVec w;
   const MapVec ox;
   const MapVec oz;
+  const String lk;
 public:
   ZIP(const MapMat x_,
       const MapMat z_, 
       const MapVec y_,
       const MapVec weights_,
       const MapVec offsetx_,
-      const MapVec offsetz_) : X(x_), Z(z_), 
+      const MapVec offsetz_,
+      const String link) : X(x_), Z(z_), 
       Y(y_), w(weights_), ox(offsetx_), oz(offsetz_){}
   
   double f_grad(Constvec& theta, Refvec grad){
@@ -487,7 +489,8 @@ public:
   Rcpp::NumericVector gradient = grad_ZIP(wrap(theta), wrap(X), wrap(Z), wrap(Y),
                         wrap(w),
                         wrap(ox),
-                        wrap(oz)) ;
+                        wrap(oz),
+                        lk) ;
     
   const double f = sum(gradient);
   grad.noalias() = Rcpp::as<MapVec>(gradient);
@@ -505,7 +508,8 @@ Rcpp::List fastZI_(Rcpp::NumericMatrix x,
                Rcpp::NumericVector offsetx,
                Rcpp::NumericVector offsetz,
                Rcpp::NumericVector start,
-               double eps_f, double eps_g, int maxit){
+               double eps_f, double eps_g, int maxit,
+               String link = "probit"){
   
   const MapMat xx   = Rcpp::as<MapMat>(x) ;
   const MapMat zz   = Rcpp::as<MapMat>(z) ;
@@ -513,10 +517,11 @@ Rcpp::List fastZI_(Rcpp::NumericMatrix x,
   const MapVec ww   = Rcpp::as<MapVec>(weights) ;
   const MapVec oox  = Rcpp::as<MapVec>(offsetx) ;
   const MapVec ooz  = Rcpp::as<MapVec>(offsetz) ;
+  const String linkfun = link; 
   
   ZIP zeroinfl(xx, zz, yy,
           ww, oox,
-          ooz);
+          ooz, linkfun);
   
   // Initial guess
   Rcpp::NumericVector b = Rcpp::clone(start);
