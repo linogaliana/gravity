@@ -18,4 +18,5 @@ fit_speed  <- gravity:::fastzeroinfl(Days ~ Sex + Age + Eth*Lrn, data = MASS::qu
 fit_speedb  <- gravity:::fastzeroinfl2(Days ~ Sex + Age + Eth*Lrn, data = MASS::quine)
 
 
-fastZI(X, Z, Y)
+fastZI(X, Z, Y, link = "probit")
+fastZI(X, Z, Y, link = "logit")
