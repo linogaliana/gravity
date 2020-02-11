@@ -12,5 +12,4 @@ weights = rep(1, nrow(X))
 offsetx = rep(0, nrow(X))
 offsetz = rep(0, nrow(X))
 
-fastZI(x, y, start = rep(0, ncol(x)), eps_f = 1e-08, eps_g = 1e-05, 
-                   maxit = 300)
+fastZI(X, Z, Y)
