@@ -81,35 +81,73 @@ testthat::test_that("Gradient for ZINB is correct",{
 })
 
 
+# TRY ON REAL DATA -----------
+
+
+fm_zinb2 <- pscl::zeroinfl(art ~ . | ., data = bioChemists, dist = "negbin", x = TRUE)
+
+testthat::test_that(
+  "With real data, we find equal gradients",{
+    testthat::expect_equal(
+      grad_ZIP(params, X, Z, Y,
+               weights = rep(1, nrow(X)),
+               offsetx = rep(0, nrow(X)),
+               offsetz = rep(0, nrow(X)),
+               link = "logit"),
+      grad_ZIP_R(params, X, Z, Y,
+                 weights = rep(1, nrow(X)),
+                 offsetx = rep(0, nrow(X)),
+                 offsetz = rep(0, nrow(X)),
+                 link = "logit")
+    )
+  }
+)
+
+testthat::test_that(
+  "With real data, we find equal gradients",{
+    testthat::expect_equal(
+      as.numeric(grad_ZINB(c(params,1), X, Z, Y,
+               weights = rep(1, nrow(X)),
+               offsetx = rep(0, nrow(X)),
+               offsetz = rep(0, nrow(X)),
+               link = "logit")),
+      as.numeric(grad_ZINB_R(c(params,1), X, Z, Y,
+                 weights = rep(1, nrow(X)),
+                 offsetx = rep(0, nrow(X)),
+                 offsetz = rep(0, nrow(X)),
+                 link = "logit"))
+    )
+  }
+)
 
 
 # speed
 
-microbenchmark::microbenchmark(
-  grad_ZINB(c(params,2), X, Z, Y,
-            weights = rep(1, nrow(X)),
-            offsetx = rep(0, nrow(X)),
-            offsetz = rep(0, nrow(X)),
-            link = "logit"),
-  grad_ZINB_R(c(params,2), X, Z, Y,
-              weights = rep(1, nrow(X)),
-              offsetx = rep(0, nrow(X)),
-              offsetz = rep(0, nrow(X)),
-              link = "logit"),
-  times=50L
-)
-
-
-microbenchmark::microbenchmark(
-  grad_ZINB(c(params,2), X, Z, Y,
-            weights = rep(1, nrow(X)),
-            offsetx = rep(0, nrow(X)),
-            offsetz = rep(0, nrow(X)),
-            link = "probit"),
-  grad_ZINB_R(c(params,2), X, Z, Y,
-              weights = rep(1, nrow(X)),
-              offsetx = rep(0, nrow(X)),
-              offsetz = rep(0, nrow(X)),
-              link = "probit"),
-  times=50L
-)
+# microbenchmark::microbenchmark(
+#   grad_ZINB(c(params,2), X, Z, Y,
+#             weights = rep(1, nrow(X)),
+#             offsetx = rep(0, nrow(X)),
+#             offsetz = rep(0, nrow(X)),
+#             link = "logit"),
+#   grad_ZINB_R(c(params,2), X, Z, Y,
+#               weights = rep(1, nrow(X)),
+#               offsetx = rep(0, nrow(X)),
+#               offsetz = rep(0, nrow(X)),
+#               link = "logit"),
+#   times=50L
+# )
+# 
+# 
+# microbenchmark::microbenchmark(
+#   grad_ZINB(c(params,2), X, Z, Y,
+#             weights = rep(1, nrow(X)),
+#             offsetx = rep(0, nrow(X)),
+#             offsetz = rep(0, nrow(X)),
+#             link = "probit"),
+#   grad_ZINB_R(c(params,2), X, Z, Y,
+#               weights = rep(1, nrow(X)),
+#               offsetx = rep(0, nrow(X)),
+#               offsetz = rep(0, nrow(X)),
+#               link = "probit"),
+#   times=50L
+# )

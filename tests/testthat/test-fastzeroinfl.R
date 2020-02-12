@@ -1,28 +1,81 @@
 context("fastzeroinfl is consistent with existing pscl::fastzeroinfl function")
 
 
-fit_pscl  <- pscl::zeroinfl(Days ~ Sex + Age + Eth*Lrn, data = MASS::quine)
-fit_speed  <- gravity:::fastzeroinfl(Days ~ Sex + Age + Eth*Lrn, data = MASS::quine)
-fit_speedb  <- gravity:::fastzeroinfl2(Days ~ Sex + Age + Eth*Lrn, data = MASS::quine)
+# I - ZERO INFLATED POISSON --------
+
+# A/ logit
+
+fit_pscl  <- pscl::zeroinfl(Days ~ Sex + Age + Eth*Lrn, data = MASS::quine,
+                            link = "logit")
+fit_speed  <- gravity:::fastzeroinfl(Days ~ Sex + Age + Eth*Lrn, data = MASS::quine,
+                                     link = "logit")
+fit_speedb  <- gravity:::fastzeroinfl2(Days ~ Sex + Age + Eth*Lrn, data = MASS::quine,
+                                       link = "logit")
 
 
-fit_pscl2  <- pscl::zeroinfl(Days ~ Sex + Age, data = MASS::quine,
-                             dist = "negbin")
-fit_speed2  <- gravity:::fastzeroinfl(Days ~ Sex + Age, data = MASS::quine,
-                                      dist = "negbin")
-fit_speed3  <- gravity:::fastzeroinfl2(Days ~ Sex + Age, data = MASS::quine,
-                                       dist = "negbin")
-
-
-microbenchmark::microbenchmark(
-  pscl::zeroinfl(Days ~ Sex + Age, data = MASS::quine,
-                 dist = "negbin"),
-  gravity:::fastzeroinfl(Days ~ Sex + Age, data = MASS::quine,
-                         dist = "negbin"),
-  gravity:::fastzeroinfl2(Days ~ Sex + Age, data = MASS::quine,
-                          dist = "negbin"),
-  times = 10L
+testthat::test_that(
+  "Coefficients are equal when using fastglm rather than glm",
+  testthat::expect_equal(
+    fit_pscl$coefficients,
+    fit_speed$coefficients
+  )
 )
+
+testthat::test_that(
+  "Coefficients are equal when using C++ rather than R ML",
+  testthat::expect_equal(
+    fit_pscl$coefficients$count,
+    fit_speedb$coefficients$count,
+    tolerance = 0.05
+  )
+)
+
+testthat::test_that(
+  "Coefficients are equal when using C++ rather than R ML",
+  testthat::expect_equal(
+    fit_pscl$coefficients$zero,
+    fit_speedb$coefficients$zero,
+    tolerance = 0.05
+  )
+)
+
+
+# B/ probit
+
+fit_pscl  <- pscl::zeroinfl(Days ~ Sex + Age + Eth*Lrn, data = MASS::quine,
+                            link = "probit")
+fit_speed  <- gravity:::fastzeroinfl(Days ~ Sex + Age + Eth*Lrn, data = MASS::quine,
+                                     link = "probit")
+fit_speedb  <- gravity:::fastzeroinfl2(Days ~ Sex + Age + Eth*Lrn, data = MASS::quine,
+                                       link = "probit")
+
+
+testthat::test_that(
+  "Coefficients are equal when using fastglm rather than glm",
+  testthat::expect_equal(
+    fit_pscl$coefficients,
+    fit_speed$coefficients
+  )
+)
+
+testthat::test_that(
+  "Coefficients are equal when using C++ rather than R ML",
+  testthat::expect_equal(
+    fit_pscl$coefficients$count,
+    fit_speedb$coefficients$count,
+    tolerance = 0.05
+  )
+)
+
+testthat::test_that(
+  "Coefficients are equal when using C++ rather than R ML",
+  testthat::expect_equal(
+    fit_pscl$coefficients$zero,
+    fit_speedb$coefficients$zero,
+    tolerance = 0.05
+  )
+)
+
 
 microbenchmark::microbenchmark(
   pscl::zeroinfl(Days ~ Sex + Age, data = MASS::quine,
@@ -31,21 +84,21 @@ microbenchmark::microbenchmark(
                          dist = "poisson"),
   gravity:::fastzeroinfl2(Days ~ Sex + Age, data = MASS::quine,
                           dist = "poisson"),
-  times = 10L
+  times = 50L
 )
 
-
-
-fit_pscl  <- pscl::zeroinfl(Days ~ Sex + Age + Eth*Lrn, data = MASS::quine, x = TRUE)
-fit_speed  <- gravity:::fastzeroinfl(Days ~ Sex + Age + Eth*Lrn, data = MASS::quine)
-fit_speedb  <- gravity:::fastzeroinfl2(Days ~ Sex + Age + Eth*Lrn, data = MASS::quine)
+# NEGATIVE BINOMIAL ------------
 
 data("bioChemists", package = "pscl")
 
-fit_pscl2  <- pscl::zeroinfl(art ~ . | ., data = bioChemists, dist = "negbin")
-fit_speed2  <- gravity:::fastzeroinfl(art ~ . | ., data = bioChemists, dist = "negbin")
-fit_speedb2  <- gravity:::fastzeroinfl2(art ~ . | ., data = bioChemists, dist = "negbin")
 
+fm_zinb2 <- pscl::zeroinfl(art ~ . | ., data = bioChemists, dist = "negbin")
+fm_zinb2a <- gravity::fastzeroinfl(art ~ . | ., data = bioChemists, dist = "negbin")
+fm_zinb2b <- gravity:::fastzeroinfl2(art ~ . | ., data = bioChemists, dist = "negbin")
+
+
+
+# MORE TESTS --------------------
 
 
 
