@@ -121,6 +121,24 @@ testthat::test_that(
 )
 
 
+# WITH OPTIM
+
+optim(par = c(params,1), grad_ZINB, x = X, z = Z, y = Y,
+            weights = rep(1, nrow(X)),
+            offsetx = rep(0, nrow(X)),
+            offsetz = rep(0, nrow(X)),
+            link = "logit")
+
+optim(fn = gravity:::loglik_ZINB, gr = gravity:::grad_ZINB,
+      par = c(params,1), 
+      method = pscl::zeroinfl.control()$method,
+      hessian = pscl::zeroinfl.control()$hessian,
+      control = pscl::zeroinfl.control, x = X,
+      z = Z, y = Y, weights = rep(1, nrow(X)),
+      offsetx = rep(0, nrow(X)),
+      offsetz = rep(0, nrow(X)),
+      link = "logit")
+
 # speed
 
 # microbenchmark::microbenchmark(
