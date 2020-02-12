@@ -135,6 +135,38 @@ optim(fn = gravity:::loglik_ZINB, gr = gravity:::grad_ZINB,
       offsetz = rep(0, nrow(X)),
       link = "logit")
 
+optim(fn = gravity:::loglik_ZIP, gr = gravity:::grad_ZIP,
+      par = params, 
+      method = pscl::zeroinfl.control()$method,
+      hessian = pscl::zeroinfl.control()$hessian,
+      control = pscl::zeroinfl.control, x = X,
+      z = Z, y = Y, weights = rep(1, nrow(X)),
+      offsetx = rep(0, nrow(X)),
+      offsetz = rep(0, nrow(X)),
+      link = "logit")
+
+
+optim(fn = gravity:::loglik_ZINB, gr = gravity:::grad_ZINB,
+      par = c(params,1), 
+      method = pscl::zeroinfl.control()$method,
+      hessian = pscl::zeroinfl.control()$hessian,
+      control = pscl::zeroinfl.control, x = X,
+      z = Z, y = Y, weights = rep(1, nrow(X)),
+      offsetx = rep(0, nrow(X)),
+      offsetz = rep(0, nrow(X)),
+      link = "probit")
+
+optim(fn = gravity:::loglik_ZIP, gr = gravity:::grad_ZIP,
+      par = params, 
+      method = pscl::zeroinfl.control()$method,
+      hessian = pscl::zeroinfl.control()$hessian,
+      control = pscl::zeroinfl.control, x = X,
+      z = Z, y = Y, weights = rep(1, nrow(X)),
+      offsetx = rep(0, nrow(X)),
+      offsetz = rep(0, nrow(X)),
+      link = "probit")
+
+
 # speed
 
 # microbenchmark::microbenchmark(
