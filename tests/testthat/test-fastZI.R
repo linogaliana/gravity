@@ -12,13 +12,17 @@ weights = rep(1, nrow(X))
 offsetx = rep(0, nrow(X))
 offsetz = rep(0, nrow(X))
 
+gravity:::fastZI(X, Z, Y)
+gravity:::fastZI(X, Z, Y, link = "logit")
+
 
 fit_pscl  <- pscl::zeroinfl(Days ~ Sex + Age + Eth*Lrn, data = MASS::quine, x = TRUE)
 fit_speed  <- gravity:::fastzeroinfl(Days ~ Sex + Age + Eth*Lrn, data = MASS::quine)
 fit_speedb  <- gravity:::fastzeroinfl2(Days ~ Sex + Age + Eth*Lrn, data = MASS::quine)
 
 
-fastZI(as.matrix(fit_pscl$x$count), as.matrix(fit_pscl$x$zero),
-       as.numeric(fit_pscl$y), link = "probit")
+fastZI(x=as.matrix(fit_pscl$x$count), z = as.matrix(fit_pscl$x$zero),
+       y = as.numeric(fit_pscl$y), link = "probit")
+
 fastZI(as.matrix(fit_pscl$x$count), as.matrix(fit_pscl$x$zero),
        as.numeric(fit_pscl$y), link = "logit")
