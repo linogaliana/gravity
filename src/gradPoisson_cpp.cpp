@@ -473,7 +473,7 @@ private:
   const MapVec w;
   const MapVec ox;
   const MapVec oz;
-  const String lk;
+  const String lk; 
 public:
   ZIP(const MapMat x_,
       const MapMat z_, 
@@ -482,7 +482,8 @@ public:
       const MapVec offsetx_,
       const MapVec offsetz_,
       const String link) : X(x_), Z(z_), 
-      Y(y_), w(weights_), ox(offsetx_), oz(offsetz_){}
+      Y(y_), w(weights_), ox(offsetx_), oz(offsetz_),
+      lk() {}
   
   double f_grad(Constvec& theta, Refvec grad){
     
@@ -517,11 +518,10 @@ Rcpp::List fastZI_(Rcpp::NumericMatrix x,
   const MapVec ww   = Rcpp::as<MapVec>(weights) ;
   const MapVec oox  = Rcpp::as<MapVec>(offsetx) ;
   const MapVec ooz  = Rcpp::as<MapVec>(offsetz) ;
-  const String linkfun = link; 
-  
+
   ZIP zeroinfl(xx, zz, yy,
           ww, oox,
-          ooz, linkfun);
+          ooz, link);
   
   // Initial guess
   Rcpp::NumericVector b = Rcpp::clone(start);
