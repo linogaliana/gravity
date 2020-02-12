@@ -36,6 +36,15 @@ microbenchmark::microbenchmark(
 
 
 
+fit_pscl  <- pscl::zeroinfl(Days ~ Sex + Age + Eth*Lrn, data = MASS::quine, x = TRUE)
+fit_speed  <- gravity:::fastzeroinfl(Days ~ Sex + Age + Eth*Lrn, data = MASS::quine)
+fit_speedb  <- gravity:::fastzeroinfl2(Days ~ Sex + Age + Eth*Lrn, data = MASS::quine)
+
+data("bioChemists", package = "pscl")
+
+fit_pscl2  <- pscl::zeroinfl(art ~ . | ., data = bioChemists, dist = "negbin")
+fit_speed2  <- gravity:::fastzeroinfl(art ~ . | ., data = bioChemists, dist = "negbin")
+fit_speedb2  <- gravity:::fastzeroinfl2(art ~ . | ., data = bioChemists, dist = "negbin")
 
 
 
@@ -157,3 +166,23 @@ test_that("terms", {
                    fit_speed$terms
   )
 })
+
+
+
+
+
+# microbenchmark
+
+data("bioChemists", package = "pscl")
+microbenchmark::microbenchmark(
+  fit_pscl2  <- pscl::zeroinfl(art ~ . | ., data = bioChemists, dist = "negbin"),
+  fit_speed2  <- gravity:::fastzeroinfl(art ~ . | ., data = bioChemists, dist = "negbin"),
+  fit_speedb2  <- gravity:::fastzeroinfl2(art ~ . | ., data = bioChemists, dist = "negbin")
+)
+
+microbenchmark::microbenchmark(
+  fit_pscl2  <- pscl::zeroinfl(art ~ . | ., data = bioChemists, dist = "poisson"),
+  fit_speed2  <- gravity:::fastzeroinfl(art ~ . | ., data = bioChemists, dist = "poisson"),
+  fit_speedb2  <- gravity:::fastzeroinfl2(art ~ . | ., data = bioChemists, dist = "poisson")
+)
+

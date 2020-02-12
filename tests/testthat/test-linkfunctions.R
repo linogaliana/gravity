@@ -49,8 +49,8 @@ testthat::test_that(
 testthat::test_that(
   paste0("R and Rcpp return only positive values"
   ), {
-    testthat::expect_condition(
-      invlogit(x)>0
+    testthat::expect_equal(
+      sum(invlogit(x)>0), length(x)
     )
   }
 )
@@ -100,8 +100,8 @@ x <- rnorm(1000L)
 testthat::test_that(
   paste0("R and Rcpp return only positive values"
   ), {
-    testthat::expect_condition(
-      invprobit(x)>0
+    testthat::expect_equal(
+      sum(invprobit(x)>0), length(x)
     )
   }
 )
