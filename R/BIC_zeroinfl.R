@@ -29,6 +29,8 @@ BIC.zeroinfl <- function(object, ...){
   
 }
 
+#' @export
+#' 
 
 BIC.light.zeroinfl <- function(object, ...){
   k <- nrow(object$coefficients$count) + nrow(object$coefficients$zero)
