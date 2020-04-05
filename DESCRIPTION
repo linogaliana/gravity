@@ -28,6 +28,7 @@ Suggests:
     profvis,
     data.table,
     microbenchmark,
-    stargazer
+    stargazer,
+    covr
 VignetteBuilder: knitr
 Encoding: UTF-8
