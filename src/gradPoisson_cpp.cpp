@@ -33,7 +33,6 @@ using namespace Rcpp;
 //' @seealso \code{\link[stats]{qlogis}}
 //'
 //' @examples
-//' library(qwraps2)
 //' library(rbenchmark)
 //'
 //' # compare logit to qlogis
