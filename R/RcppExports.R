@@ -22,7 +22,6 @@
 #' @seealso \code{\link[stats]{qlogis}}
 #'
 #' @examples
-#' library(qwraps2)
 #' library(rbenchmark)
 #'
 #' # compare logit to qlogis
@@ -80,8 +79,24 @@ grad_ZIP <- function(params, x, z, y, weights, offsetx, offsetz, link = "probit"
     .Call('_gravity_grad_ZIP', PACKAGE = 'gravity', params, x, z, y, weights, offsetx, offsetz, link)
 }
 
+grad_ZIP_probit <- function(params, x, z, y, weights, offsetx, offsetz) {
+    .Call('_gravity_grad_ZIP_probit', PACKAGE = 'gravity', params, x, z, y, weights, offsetx, offsetz)
+}
+
+grad_ZIP_logit <- function(params, x, z, y, weights, offsetx, offsetz) {
+    .Call('_gravity_grad_ZIP_logit', PACKAGE = 'gravity', params, x, z, y, weights, offsetx, offsetz)
+}
+
 grad_ZINB <- function(params, x, z, y, weights, offsetx, offsetz, link = "probit") {
     .Call('_gravity_grad_ZINB', PACKAGE = 'gravity', params, x, z, y, weights, offsetx, offsetz, link)
+}
+
+fastZIP_binomial_ <- function(x, z, y, weights, offsetx, offsetz, start, eps_f, eps_g, maxit) {
+    .Call('_gravity_fastZIP_binomial_', PACKAGE = 'gravity', x, z, y, weights, offsetx, offsetz, start, eps_f, eps_g, maxit)
+}
+
+fastZIP_logistic_ <- function(x, z, y, weights, offsetx, offsetz, start, eps_f, eps_g, maxit) {
+    .Call('_gravity_fastZIP_logistic_', PACKAGE = 'gravity', x, z, y, weights, offsetx, offsetz, start, eps_f, eps_g, maxit)
 }
 
 #' Score for negative binomial maximum-likelihood estimates
