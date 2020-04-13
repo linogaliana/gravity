@@ -153,7 +153,7 @@ fastglm.nb <- function(formula, data, weights, subset, na.action, start = NULL,
     else fit$deviance
     fit$null.deviance <- null.deviance
   }
-  class(fit) <- c("negbin", "glm", "lm","fastglm")
+  class(fit) <- c("fastnegbin","negbin", "glm", "lm","fastglm")
   fit$terms <- Terms
   fit$formula <- as.vector(attr(Terms, "formula"))
   Call$init.theta <- signif(as.vector(th), 10)

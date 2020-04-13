@@ -410,6 +410,6 @@ fastzeroinfl <- function(formula, data, subset, na.action, weights, offset,
     rval$y <- Y
   if (x) 
     rval$x <- list(count = X, zero = Z)
-  class(rval) <- "zeroinfl"
+  class(rval) <- c("fastzeroinfl", "zeroinfl")
   return(rval)
 }
