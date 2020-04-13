@@ -29,28 +29,4 @@ BIC.zeroinfl <- function(object, ...){
   
 }
 
-#' @export
-#' 
-
-BIC.light.zeroinfl <- function(object, ...){
-  k <- nrow(object$coefficients$count) + nrow(object$coefficients$zero)
-  return(
-    -2*object$loglik + k*log(object$n)
-  )
-}
-
-
-
-BIC.light.glm <- function(object, ...){
-  
-  llk <- as.numeric(logLik(object))
-  k <- nrow(object$coefficients)
-  
-  if (!is.null(object$theta)) k <- k + 1
-  
-  return(
-    -llk + k*log(object$n)
-  )
-  
-}
-
+BIC.fastzeroinfl <- BIC.zeroinfl
